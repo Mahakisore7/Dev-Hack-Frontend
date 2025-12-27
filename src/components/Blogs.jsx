@@ -1,6 +1,6 @@
 import React from 'react';
 import { ThumbsUp, ThumbsDown, Flame, Stethoscope, Car, Shield, Clock, MapPin } from 'lucide-react';
-import { updateVote } from '../data/incidents.jsx';
+import { updateVote } from '../data/incidents.js';
 
 const iconMap = {
   fire: { icon: Flame, bg: 'bg-orange-500/20', text: 'text-orange-500' },

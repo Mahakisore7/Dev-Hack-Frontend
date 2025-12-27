@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Flame, Stethoscope, Car, Shield, Upload, Send } from 'lucide-react';
-import { addIncident } from '../data/incidents.jsx';
+import { addIncident } from '../data/incidents.js';
 
 const incidentTypes = [
   { id: 'fire', label: 'Fire', icon: Flame, color: 'bg-orange-500 hover:bg-orange-600' },
