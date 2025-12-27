@@ -13,8 +13,33 @@ const HeroReport = ({ onIncidentAdded }) => {
   const [selectedType, setSelectedType] = useState(null);
   const [description, setDescription] = useState('');
   const [location, setLocation] = useState('');
+  const [latitude, setLatitude] = useState(null);
+  const [longitude, setLongitude] = useState(null);
+  const [gpsLoading, setGpsLoading] = useState(false);
   const [media, setMedia] = useState(null);
   const [mediaPreview, setMediaPreview] = useState(null);
+
+  const handleGetLocation = () => {
+    if (!navigator.geolocation) {
+      alert('Geolocation is not supported by your browser');
+      return;
+    }
+
+    setGpsLoading(true);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude: lat, longitude: lng } = position.coords;
+        setLatitude(lat);
+        setLongitude(lng);
+        setLocation(`${lat.toFixed(6)}, ${lng.toFixed(6)}`);
+        setGpsLoading(false);
+      },
+      (error) => {
+        alert('Error getting location: ' + error.message);
+        setGpsLoading(false);
+      }
+    );
+  };
 
   const handleMediaChange = (e) => {
     const file = e.target.files[0];
@@ -31,8 +56,8 @@ const HeroReport = ({ onIncidentAdded }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     
-    if (!selectedType || !description || !location) {
-      alert('Please fill in all required fields');
+    if (!selectedType ) {
+      alert('Please fill the Type');
       return;
     }
 
@@ -87,19 +112,32 @@ const HeroReport = ({ onIncidentAdded }) => {
 
           {/* Location */}
           <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-900 mb-2">Location *</label>
-            <input
-              type="text"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              placeholder="Enter the incident location"
-              className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-900"
-            />
+            <label className="block text-sm font-medium text-gray-900 mb-2">Location (Optional)</label>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                placeholder="Enter the incident location or use GPS"
+                className="flex-1 px-4 py-3 rounded-xl border border-gray-300 bg-white text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-900"
+              />
+              <button
+                type="button"
+                onClick={handleGetLocation}
+                disabled={gpsLoading}
+                className="px-4 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-xl font-medium transition-colors"
+              >
+                {gpsLoading ? 'Getting...' : 'GPS'}
+              </button>
+            </div>
+            {latitude && longitude && (
+              <p className="text-xs text-gray-500 mt-2">Coordinates: {latitude.toFixed(6)}, {longitude.toFixed(6)}</p>
+            )}
           </div>
 
           {/* Description */}
           <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-900 mb-2">Description *</label>
+            <label className="block text-sm font-medium text-gray-900 mb-2">Description (Optional)</label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
