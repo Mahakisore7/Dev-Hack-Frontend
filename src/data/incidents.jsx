@@ -9,6 +9,7 @@ let incidents = [
     media: null,
     upvotes: 10,
     downvotes: 6,
+    status: 'verified',
   },
   {
     id: 2,
@@ -19,6 +20,7 @@ let incidents = [
     media: null,
     upvotes: 13,
     downvotes: 4,
+    status: 'unverified',
   },
 ];
 
@@ -31,6 +33,7 @@ export const addIncident = (incident) => {
     timestamp: new Date().toISOString(),
     upvotes: 0,
     downvotes: 0,
+    status: 'unverified',
   };
   incidents = [newIncident, ...incidents];
   return newIncident;

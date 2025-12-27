@@ -65,7 +65,8 @@ const HeroReport = ({ onIncidentAdded }) => {
       type: selectedType,
       description,
       location,
-      media: mediaPreview
+      media: mediaPreview,
+      status: 'unverified'
     };
 
     addIncident(newIncident);

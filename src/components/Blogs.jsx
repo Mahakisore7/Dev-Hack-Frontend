@@ -23,6 +23,11 @@ const formatTime = (timestamp) => {
 const IncidentCard = ({ incident, onVote }) => {
   const typeConfig = iconMap[incident.type] || iconMap['public safety'];
   const Icon = typeConfig.icon;
+  const status = incident.status || 'unverified';
+  const statusStyles =
+    status === 'verified'
+      ? 'bg-green-100 text-green-700'
+      : 'bg-amber-100 text-amber-700';
 
   return (
     <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-md hover:shadow-lg transition-shadow">
@@ -31,9 +36,14 @@ const IncidentCard = ({ incident, onVote }) => {
         <div className={`p-3 rounded-xl ${typeConfig.bg}`}>
           <Icon size={24} className={typeConfig.text} />
         </div>
-        <span className="text-xs font-medium uppercase tracking-wide px-3 py-1 rounded-full bg-gray-100 text-gray-500">
-          {incident.type}
-        </span>
+        <div className="flex flex-col items-end gap-1">
+          <span className="text-xs font-medium uppercase tracking-wide px-3 py-1 rounded-full bg-gray-100 text-gray-500">
+            {incident.type}
+          </span>
+          {/* <span className={`text-xs font-semibold px-3 py-1 rounded-full ${statusStyles}`}>
+            {status}
+          </span> */}
+        </div>
       </div>
 
       {/* Content */}
@@ -85,6 +95,8 @@ const Blogs = ({ incidents, onRefresh }) => {
     onRefresh();
   };
 
+  const unverifiedIncidents = incidents.filter((incident) => incident.status === 'unverified');
+
   return (
     <section id="blogs" className="min-h-screen py-16 px-4 bg-gray-100">
       <div className="max-w-6xl mx-auto">
@@ -93,13 +105,13 @@ const Blogs = ({ incidents, onRefresh }) => {
           <p className="text-gray-500">Recent incidents reported by the community</p>
         </div>
 
-        {incidents.length === 0 ? (
+        {unverifiedIncidents.length === 0 ? (
           <div className="text-center py-16">
             <p className="text-muted-foreground text-lg">No incidents reported yet.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {incidents.map((incident) => (
+            {unverifiedIncidents.map((incident) => (
               <IncidentCard key={incident.id} incident={incident} onVote={handleVote} />
             ))}
           </div>
