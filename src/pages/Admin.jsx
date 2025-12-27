@@ -1,11 +1,11 @@
 // src/pages/Admin.jsx
 import React, { useState } from "react";
 import { getIncidents, updateIncidentStatus } from "../data/incidents";
-import AdminNav from "../component1/AdminNav.jsx"
-import Unverified from "../component1/Unverified.jsx";
-import Verified from "../component1/Verified.jsx";
-import Resolved from "../component1/Resolved.jsx";
-import Rejected from "../component1/Rejected.jsx";
+import AdminNav from "../components1/AdminNav.jsx"
+import Unverified from "../components1/Unverified.jsx";
+import Verified from "../components1/Verified.jsx";
+import Resolved from "../components1/Resolved.jsx";
+import Rejected from "../components1/Rejected.jsx";
 
 const statusComponents = {
   unverified: Unverified,
