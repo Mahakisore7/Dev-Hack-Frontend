@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Menu, X, Shield, CheckCircle, XCircle, Clock, Home, LogOut } from 'lucide-react';
+import { Menu, X, Shield, CheckCircle, XCircle, Clock, Home, LogOut, Map } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 
 const navItems = [
+  { id: 'map', label: 'Map', icon: Map, color: 'text-blue-600' },
   { id: 'unverified', label: 'Unverified', icon: Clock, color: 'text-amber-600' },
   { id: 'verified', label: 'Verified', icon: CheckCircle, color: 'text-green-600' },
   { id: 'resolved', label: 'Resolved', icon: Shield, color: 'text-blue-600' },
