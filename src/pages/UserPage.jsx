@@ -41,6 +41,7 @@
 
 
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import HeroPart from '../components/HeroPart';
 import Blogs from '../components/Blogs';
@@ -48,6 +49,7 @@ import Footer from '../components/Footer';
 import { getIncidents } from '../data/incidents';
 
 const UserPage = () => {
+  const navigate = useNavigate();
   const [incidents, setIncidents] = useState([]);
 
   const refreshIncidents = () => {
@@ -61,7 +63,7 @@ const UserPage = () => {
   const handleNavigate = (section) => {
     // Section navigation is kept for blogs, but report now goes to dedicated route
     if (section === 'report') {
-      return window.location.assign('/user/report');
+      return navigate('/user/report');
     }
     const el = document.getElementById(section);
     if (el) {
