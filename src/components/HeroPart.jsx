@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Flame, Stethoscope, Car, Shield, Upload, Send } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Flame, Stethoscope, Car, Shield, Upload, Send, X } from 'lucide-react';
 import { addIncident } from '../data/incidents.jsx';
 
 const incidentTypes = [
@@ -15,31 +15,24 @@ const HeroReport = ({ onIncidentAdded }) => {
   const [location, setLocation] = useState('');
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
-  const [gpsLoading, setGpsLoading] = useState(false);
   const [media, setMedia] = useState(null);
   const [mediaPreview, setMediaPreview] = useState(null);
 
-  const handleGetLocation = () => {
-    if (!navigator.geolocation) {
-      alert('Geolocation is not supported by your browser');
-      return;
+  useEffect(() => {
+    // Request GPS permission automatically when component loads
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude: lat, longitude: lng } = position.coords;
+          setLatitude(lat);
+          setLongitude(lng);
+        },
+        (error) => {
+          console.log('Location access: ', error.message);
+        }
+      );
     }
-
-    setGpsLoading(true);
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const { latitude: lat, longitude: lng } = position.coords;
-        setLatitude(lat);
-        setLongitude(lng);
-        setLocation(`${lat.toFixed(6)}, ${lng.toFixed(6)}`);
-        setGpsLoading(false);
-      },
-      (error) => {
-        alert('Error getting location: ' + error.message);
-        setGpsLoading(false);
-      }
-    );
-  };
+  }, []);
 
   const handleMediaChange = (e) => {
     const file = e.target.files[0];
@@ -51,6 +44,13 @@ const HeroReport = ({ onIncidentAdded }) => {
       };
       reader.readAsDataURL(file);
     }
+    // Reset input value to allow selecting the same file again
+    e.target.value = '';
+  };
+
+  const handleClearMedia = () => {
+    setMedia(null);
+    setMediaPreview(null);
   };
 
   const handleSubmit = (e) => {
@@ -61,10 +61,14 @@ const HeroReport = ({ onIncidentAdded }) => {
       return;
     }
 
+    const finalLocation = location || (latitude && longitude ? `${latitude.toFixed(6)}, ${longitude.toFixed(6)}` : '');
+
     const newIncident = {
       type: selectedType,
       description,
-      location,
+      location: finalLocation,
+      latitude,
+      longitude,
       media: mediaPreview,
       status: 'unverified'
     };
@@ -76,8 +80,7 @@ const HeroReport = ({ onIncidentAdded }) => {
     setSelectedType(null);
     setDescription('');
     setLocation('');
-    setMedia(null);
-    setMediaPreview(null);
+    handleClearMedia();
   };
 
   return (
@@ -114,25 +117,15 @@ const HeroReport = ({ onIncidentAdded }) => {
           {/* Location */}
           <div className="mb-6">
             <label className="block text-sm font-medium text-gray-900 mb-2">Location (Optional)</label>
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                placeholder="Enter the incident location or use GPS"
-                className="flex-1 px-4 py-3 rounded-xl border border-gray-300 bg-white text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-900"
-              />
-              <button
-                type="button"
-                onClick={handleGetLocation}
-                disabled={gpsLoading}
-                className="px-4 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-xl font-medium transition-colors"
-              >
-                {gpsLoading ? 'Getting...' : 'GPS'}
-              </button>
-            </div>
-            {latitude && longitude && (
-              <p className="text-xs text-gray-500 mt-2">Coordinates: {latitude.toFixed(6)}, {longitude.toFixed(6)}</p>
+            <input
+              type="text"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              placeholder="Enter the incident location"
+              className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-900"
+            />
+            {latitude && longitude && !location && (
+              <p className="text-xs text-blue-600 mt-2">📍 GPS coordinates saved: {latitude.toFixed(6)}, {longitude.toFixed(6)}</p>
             )}
           </div>
 
@@ -171,7 +164,16 @@ const HeroReport = ({ onIncidentAdded }) => {
             </div>
             {mediaPreview && (
               <div className="mt-3">
-                <img src={mediaPreview} alt="Preview" className="w-full max-h-48 object-cover rounded-lg" />
+                <div className="relative">
+                  <img src={mediaPreview} alt="Preview" className="w-full max-h-48 object-cover rounded-lg" />
+                  <button
+                    type="button"
+                    onClick={handleClearMedia}
+                    className="absolute top-2 right-2 bg-red-600 hover:bg-red-700 text-white rounded-full p-2 transition-colors"
+                  >
+                    <X size={18} />
+                  </button>
+                </div>
               </div>
             )}
           </div>
