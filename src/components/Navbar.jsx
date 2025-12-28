@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, X, User } from 'lucide-react';
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 
 const Navbar = ({ onNavigate }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [username, setUsername] = useState('Citizen');
+  const navigate = useNavigate();
 
   useEffect(() => {
     try {
@@ -28,6 +29,16 @@ const Navbar = ({ onNavigate }) => {
     setIsMenuOpen(false);
   };
 
+  const handleLogout = () => {
+    try {
+      if (typeof window !== 'undefined') {
+        window.localStorage.removeItem('username');
+      }
+    } catch {}
+    navigate('/user', { replace: true });
+    setIsMenuOpen(false);
+  };
+
   // Export username via localStorage for other components
   React.useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -45,14 +56,14 @@ const Navbar = ({ onNavigate }) => {
           
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-6">
-              <button
-                onClick={() => handleNavClick('report')}
-                className="px-4 py-2 text-gray-900 font-medium hover:text-blue-600 transition-colors"
-              >
-                REPORT
-              </button>
+            <Link
+              to="/user/report"
+              className="px-4 py-2 text-gray-900 font-medium hover:text-blue-600 transition-colors"
+            >
+              REPORT
+            </Link>
             <button
-              onClick={() => handleNavClick('logout')}
+              onClick={handleLogout}
               className="px-4 py-2 text-white font-medium bg-red-600 hover:bg-red-700 transition-colors rounded-lg"
             >
               LOGOUT
@@ -74,12 +85,13 @@ const Navbar = ({ onNavigate }) => {
       {/* Mobile Menu */}
       {isMenuOpen && (
         <div className="md:hidden absolute top-16 right-4 w-48 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden">
-          <button
-            onClick={() => handleNavClick('report')}
-            className="w-full px-4 py-3 text-left text-gray-900 hover:bg-gray-100 transition-colors font-medium"
+          <Link
+            to="/user/report"
+            className="w-full px-4 py-3 block text-left text-gray-900 hover:bg-gray-100 transition-colors font-medium"
+            onClick={() => setIsMenuOpen(false)}
           >
             REPORT
-          </button>
+          </Link>
           {/* <button
             onClick={() => handleNavClick('blogs')}
             className="w-full px-4 py-3 text-left text-gray-900 hover:bg-gray-100 transition-colors font-medium border-t border-gray-200"
@@ -94,7 +106,7 @@ const Navbar = ({ onNavigate }) => {
             ADMIN
           </Link> */}
           <button
-            onClick={() => handleNavClick('logout')}
+            onClick={handleLogout}
             className="w-full px-4 py-3 text-left text-red-600 hover:bg-red-50 transition-colors font-medium border-t border-gray-200"
           >
             LOGOUT

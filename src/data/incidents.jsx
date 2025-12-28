@@ -21,7 +21,7 @@ let incidents = [
     upvotes: 13,
     downvotes: 4,
     status: 'unverified',
-  },
+  }
 ];
 
 export const getIncidents = () => [...incidents];
