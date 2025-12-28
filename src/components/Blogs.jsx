@@ -91,8 +91,8 @@ const IncidentCard = ({ incident, onVote }) => {
 };
 
 const Blogs = ({ incidents, onRefresh }) => {
-  const handleVote = (id, voteType) => {
-    updateVote(id, voteType);
+  const handleVote = async (id, voteType) => {
+    await updateVote(id, voteType);
     onRefresh();
   };
 
