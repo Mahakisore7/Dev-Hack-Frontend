@@ -34,7 +34,7 @@ const VerifiedIncidents = ({ onStatusChange }) => {
         `http://localhost:5000/api/admin/update-status/${id}`,
         { status: 'Resolved' }, // Matches Backend Enum
         { headers: { token: token } }
-      );
+      );  
       
       // Refresh list (item will disappear)
       fetchIncidents();
@@ -46,12 +46,13 @@ const VerifiedIncidents = ({ onStatusChange }) => {
       console.error(error);
     }
   };
-
+  // 🟢 Update the actions array like this:
   const actions = [
     {
       label: 'Mark as Resolved',
       icon: Shield,
-      onClick: handleResolve,
+      // Change this line to ensure the ID is passed correctly
+      onClick: (id) => handleResolve(id), 
       className: 'bg-blue-500 hover:bg-blue-600 text-white',
     },
   ];
