@@ -1,30 +1,5 @@
 // Temporary data store for incidents
-let incidents = [
-  {
-    id: 1,
-    type: 'fire',
-    description: 'Small fire reported near the park area',
-    location: 'Central Park, Block A',
-    coordinates: { lat: 40.7829, lng: -73.9654 }, // Central Park coordinates
-    timestamp: new Date('2024-12-27T10:30:00').toISOString(),
-    media: null,
-    upvotes: 10,
-    downvotes: 6,
-    status: 'verified',
-  },
-  {
-    id: 2,
-    type: 'road accident',
-    description: 'Two vehicles collision at the intersection',
-    location: 'Main Street & 5th Avenue',
-    coordinates: { lat: 40.7614, lng: -73.9776 }, // Manhattan intersection coordinates
-    timestamp: new Date('2024-12-27T09:15:00').toISOString(),
-    media: null,
-    upvotes: 13,
-    downvotes: 4,
-    status: 'unverified',
-  },
-];
+let incidents = [];
 
 export const getIncidents = () => [...incidents];
 
@@ -36,7 +11,10 @@ export const addIncident = (incident) => {
     upvotes: 0,
     downvotes: 0,
     status: 'unverified',
-    coordinates: incident.coordinates || { lat: 40.7580, lng: -73.9855 }, // Default to Times Square if no coordinates
+    // Only add coordinates if latitude and longitude are provided
+    coordinates: (incident.latitude && incident.longitude) 
+      ? { lat: incident.latitude, lng: incident.longitude }
+      : undefined,
   };
   incidents = [newIncident, ...incidents];
   return newIncident;

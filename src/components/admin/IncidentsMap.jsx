@@ -100,8 +100,10 @@ const IncidentsMap = () => {
 
     // Get admin's current location
     if (navigator.geolocation) {
+      console.log('Requesting location access...');
       navigator.geolocation.getCurrentPosition(
         (position) => {
+          console.log('Location access granted:', position.coords);
           setAdminLocation({
             lat: position.coords.latitude,
             lng: position.coords.longitude,
@@ -109,9 +111,31 @@ const IncidentsMap = () => {
           setLoading(false);
         },
         (error) => {
-          console.error('Error getting location:', error);
-          setLocationError('Unable to get your location');
+          console.error('Geolocation error:', error);
+          let errorMessage = 'Unable to get your location. ';
+          
+          switch(error.code) {
+            case error.PERMISSION_DENIED:
+              errorMessage += 'Location access was denied. Please allow location access and refresh the page.';
+              break;
+            case error.POSITION_UNAVAILABLE:
+              errorMessage += 'Location information is unavailable.';
+              break;
+            case error.TIMEOUT:
+              errorMessage += 'Location request timed out.';
+              break;
+            default:
+              errorMessage += 'An unknown error occurred.';
+              break;
+          }
+          
+          setLocationError(errorMessage);
           setLoading(false);
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 300000
         }
       );
     } else {
