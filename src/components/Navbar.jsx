@@ -56,12 +56,12 @@ const Navbar = () => {
               <Home size={18} /> HOME
             </Link>
 
-            <Link
+            {/* <Link
               to="/user/report"
               className="px-4 py-2 bg-gray-900 text-white font-medium hover:bg-gray-800 transition-colors rounded-lg flex items-center gap-2"
             >
               <AlertTriangle size={18} /> REPORT
-            </Link>
+            </Link> */}
 
             <button
               onClick={handleLogout}
@@ -95,13 +95,13 @@ const Navbar = () => {
             <Home size={20} /> HOME
           </Link>
           
-          <Link
+          {/* <Link
             to="/user/report"
             className="w-full px-4 py-3 flex items-center gap-3 bg-gray-900 text-white hover:bg-gray-800 rounded-lg font-medium"
             onClick={() => setIsMenuOpen(false)}
           >
             <AlertTriangle size={20} /> REPORT INCIDENT
-          </Link>
+          </Link> */}
 
           <button
             onClick={handleLogout}

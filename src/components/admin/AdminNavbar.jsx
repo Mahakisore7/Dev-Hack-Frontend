@@ -96,13 +96,13 @@ const AdminNavbar = ({ activeTab, onTabChange }) => {
             {/* Divider */}
             <div className="h-6 w-px bg-slate-700 mx-2"></div>
 
-            <Link
+            {/* <Link
               to="/user"
               className="flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-all"
             >
               <Home size={18} />
               <span>User View</span>
-            </Link>
+            </Link> */}
             
             {/* Logout Button */}
             <button
@@ -149,14 +149,14 @@ const AdminNavbar = ({ activeTab, onTabChange }) => {
               );
             })}
             
-            <Link
+            {/* <Link
               to="/user"
               className="w-full flex items-center gap-3 px-4 py-3 rounded-lg font-medium text-slate-300 hover:bg-slate-700 hover:text-white transition-all border-t border-slate-600 mt-2 pt-4"
               onClick={() => setIsMenuOpen(false)}
             >
               <Home size={20} />
               <span>User View</span>
-            </Link>
+            </Link> */}
             
             {/* Logout Button for Mobile */}
             <button
