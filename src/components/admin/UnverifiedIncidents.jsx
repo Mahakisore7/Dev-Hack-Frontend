@@ -49,7 +49,7 @@ const UnverifiedIncidents = ({ onStatusChange }) => {
         {incidents.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
             {incidents.map((incident) => (
-              <IncidentCard key={incident.id} incident={incident} actions={actions} />
+              <IncidentCard key={incident.id} incident={incident} actions={actions} onNotesUpdate={onStatusChange} />
             ))}
           </div>
         ) : (

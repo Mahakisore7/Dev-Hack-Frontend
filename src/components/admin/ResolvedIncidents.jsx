@@ -3,7 +3,7 @@ import { Shield } from 'lucide-react';
 import IncidentCard from './IncidentCard';
 import { getIncidentsByStatus } from '../../data/incidents';
 
-const ResolvedIncidents = () => {
+const ResolvedIncidents = ({ onStatusChange }) => {
   const incidents = getIncidentsByStatus('resolved');
 
   return (
@@ -24,7 +24,7 @@ const ResolvedIncidents = () => {
         {incidents.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
             {incidents.map((incident) => (
-              <IncidentCard key={incident.id} incident={incident} actions={[]} />
+              <IncidentCard key={incident.id} incident={incident} onNotesUpdate={onStatusChange} />
             ))}
           </div>
         ) : (
