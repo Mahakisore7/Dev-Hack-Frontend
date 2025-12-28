@@ -1,36 +1,39 @@
-// src/pages/Admin.jsx
-import React, { useState } from "react";
-import { getIncidents, updateIncidentStatus } from "../data/incidents";
-import AdminNav from "../components1/AdminNav.jsx"
-import Unverified from "../components1/Unverified.jsx";
-import Verified from "../components1/Verified.jsx";
-import Resolved from "../components1/Resolved.jsx";
-import Rejected from "../components1/Rejected.jsx";
+import React, { useState } from 'react';
+import AdminNavbar from '../components/admin/AdminNavbar.jsx';
+import AdminNavigation from '../components/admin/AdminNavigation';
+import UnverifiedIncidents from '../components/admin/UnverifiedIncidents';
+import VerifiedIncidents from '../components/admin/VerifiedIncidents';
+import ResolvedIncidents from '../components/admin/ResolvedIncidents';
+import RejectedIncidents from '../components/admin/RejectedIncidents';
 
-const statusComponents = {
-  unverified: Unverified,
-  verified: Verified,
-  resolved: Resolved,
-  rejected: Rejected,
-};
+const Admin = () => {
+  const [activeTab, setActiveTab] = useState('unverified');
 
-export default function Admin() {
-  const [status, setStatus] = useState("unverified");
-  const [_, forceUpdate] = useState(0); // for re-render
-
-  const incidents = getIncidents().filter(i => i.status === status);
-  const Component = statusComponents[status];
-
-  // Handler to update status and re-render
-  const handleStatusChange = (id, newStatus) => {
-    updateIncidentStatus(id, newStatus);
-    forceUpdate(n => n + 1);
+  const renderContent = () => {
+    switch (activeTab) {
+      case 'unverified':
+        return <UnverifiedIncidents />;
+      case 'verified':
+        return <VerifiedIncidents />;
+      case 'resolved':
+        return <ResolvedIncidents />;
+      case 'rejected':
+        return <RejectedIncidents />;
+      default:
+        return <UnverifiedIncidents />;
+    }
   };
 
   return (
-    <div>
-      <AdminNav current={status} onChange={setStatus} />
-      <Component incidents={incidents} onStatusChange={handleStatusChange} />
+    <div className="min-h-screen bg-background">
+      {/* <AdminNavbar /> */}
+      <AdminNavigation activeTab={activeTab} onTabChange={setActiveTab} />
+      
+      <main className="pb-12">
+        {renderContent()}
+      </main>
     </div>
   );
-}
+};
+
+export default Admin;

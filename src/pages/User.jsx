@@ -3,13 +3,13 @@ import Navbar from '../components/Navbar.jsx'
 import HeroPart from '../components/HeroPart.jsx';
 import Blogs from '../components/Blogs.jsx';
 import Footer from '../components/Footer.jsx';
-import { getIncidents } from '../data/incidents.js';
+import { getAllIncidents } from '../data/incidents.js';
 
 const App = () => {
   const [incidents, setIncidents] = useState([]);
 
   const refreshIncidents = () => {
-    setIncidents(getIncidents());
+    setIncidents(getAllIncidents());
   };
 
   useEffect(() => {

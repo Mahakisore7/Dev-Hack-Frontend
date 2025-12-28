@@ -7,6 +7,7 @@ const First = () => {
   return(
     <div>
       <button onClick={() => navigate("/user")}> USER </button>
+      <br/><br/><br/>
       <button onClick={() => navigate("/admin")}> ADMIN </button>
     </div>
   );
