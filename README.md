@@ -1,16 +1,150 @@
-# React + Vite
+# 🚒 ResQ Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+ResQ is a modern, responsive **real-time emergency incident reporting and command-center management system** built for smart cities and emergency services.
 
-Currently, two official plugins are available:
+This repository contains the **frontend web application**, developed using **React + Vite**, that enables citizens to report incidents and allows administrators/responders to verify, prioritize, and resolve them using a live dashboard and interactive maps.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## React Compiler
+## 📌 Project Overview
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Emergency response systems often suffer from:
+- Delayed reporting
+- Duplicate or fake incident alerts
+- Poor real-time visibility for responders
 
-## Expanding the ESLint configuration
+**ResQ** solves this by providing:
+- Fast citizen-side reporting
+- Community-assisted verification
+- Real-time incident tracking
+- A centralized admin command panel with map-based monitoring
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+The application is designed to be **simple, explainable, and scalable**, making it suitable for real-world deployment as well as hackathon evaluation.
+
+---
+
+## 👥 User Roles
+
+### 🟢 Citizen
+Citizens can:
+- Report emergency incidents (fire, accident, medical, public safety)
+- Upload optional images
+- View live incident status
+- Participate in verification using upvotes/downvotes
+
+### 🛡️ Admin / Responder
+Admins can:
+- View all reported incidents in real time
+- Verify or reject incidents
+- Resolve confirmed incidents
+- Track incidents visually on a live map
+- Manage incident lifecycle states
+
+---
+
+## ✨ Key Features
+
+### 👤 Citizen Interface
+- **Quick Incident Reporting**  
+  Simple form with minimal inputs to reduce reporting delay
+
+- **Real-Time Incident Feed**  
+  Live updates showing incident status changes
+
+- **Community Verification**  
+  Upvote/downvote mechanism to improve report credibility
+
+- **Map Visualization**  
+  Interactive map displaying nearby incidents
+
+---
+
+### 🛡️ Admin Dashboard
+- **Incident Lifecycle Management**  
+  Incidents move through:
+  - Unverified
+  - Verified
+  - Resolved
+  - Rejected
+
+- **Interactive Command Map**  
+  Live geospatial view of all incidents using Leaflet
+
+- **Incident Actions**
+  - Verify incident
+  - Reject false reports
+  - Mark incidents as resolved
+
+- **Real-Time Sync**
+  - Updates reflected instantly without page reload
+
+---
+
+## 🔐 Authentication & Authorization
+
+- Role-based access control:
+  - Citizen
+  - Admin
+- JWT-based authentication
+- Protected routes
+- Session persistence using localStorage
+
+---
+
+## 🎨 UI / UX Design
+
+- Clean, modern dashboard layout
+- Fully responsive (mobile-first)
+- Designed for fast decision-making
+- Dark-themed admin interface for command-center usage
+
+---
+
+## 🧩 Frameworks & Platforms Used
+
+### 🌐 Frontend
+- **React** – Component-based UI framework
+- **Vite** – Fast development server and build tool
+- **Tailwind CSS** – Utility-first styling
+- **React Router DOM** – Client-side routing
+- **Lucide React** – Icon library
+- **Leaflet & React-Leaflet** – Interactive maps
+
+### 🖥️ Backend (Integrated)
+- **Node.js** – JavaScript runtime
+- **Express.js** – REST API framework
+- **JWT (JSON Web Tokens)** – Authentication
+- **Socket.io** – Real-time communication
+
+### 🗄️ Database & Cloud
+- **MongoDB Atlas** – Cloud NoSQL database
+- **Render** – Backend deployment
+- **Netlify** – Frontend deployment
+
+---
+
+## 🌍 Live Deployment
+
+The frontend application is deployed and publicly accessible:
+
+- **Frontend (Netlify)**  
+  👉 https://resqq.netlify.app/
+
+> The deployed app supports real-time UI updates and is optimized for both desktop and mobile devices.
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js (v16+)
+- npm or yarn
+
+### Installation
+
+- ```git clone <repository_url>```
+- ```cd Dev-Hack-Frontend```
+- ```npm install```
+- ```npm run dev```
+  
+- App runs at: http://localhost:5173
