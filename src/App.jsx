@@ -1,37 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import Navbar from './components/Navbar.jsx';
-import HeroPart from './components/HeroPart.jsx';
-import Blogs from './components/Blogs.jsx';
-import Footer from './components/Footer.jsx';
-import { getIncidents } from './data/incidents.jsx';
+import React from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import UserPage from './pages/UserPage';
+import AdminPage from './pages/AdminPage';
 
 const App = () => {
-  const [incidents, setIncidents] = useState([]);
-
-  const refreshIncidents = () => {
-    setIncidents(getIncidents());
-  };
-
-  useEffect(() => {
-    refreshIncidents();
-  }, []);
-
-  const handleNavigate = (section) => {
-    const el = document.getElementById(section);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  };
-
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <Navbar onNavigate={handleNavigate} />
-      <main className="pt-16">
-        <HeroPart onIncidentAdded={refreshIncidents} />
-        <Blogs incidents={incidents} onRefresh={refreshIncidents} />
-      </main>
-      <Footer />
-    </div>
+    <Routes>
+      <Route path="/" element={<Navigate to="/user" replace />} />
+      <Route path="/user" element={<UserPage />} />
+      <Route path="/admin" element={<AdminPage />} />
+      <Route path="*" element={<div>Route not found</div>} />
+    </Routes>
   );
 };
 

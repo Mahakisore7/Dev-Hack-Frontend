@@ -52,3 +52,20 @@ export const updateVote = (id, voteType) => {
   });
   return incidents;
 };
+
+export const getIncidentsByStatus = (status) => {
+  return incidents.filter((incident) => incident.status === status);
+};
+
+export const updateIncidentStatus = (id, newStatus) => {
+  incidents = incidents.map((incident) => {
+    if (incident.id === id) {
+      return {
+        ...incident,
+        status: newStatus,
+      };
+    }
+    return incident;
+  });
+  return incidents;
+};

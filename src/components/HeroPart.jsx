@@ -9,7 +9,7 @@ const incidentTypes = [
   { id: 'public safety', label: 'Public Safety', icon: Shield, color: 'bg-blue-500 hover:bg-blue-600' }
 ];
 
-const HeroReport = ({ onIncidentAdded }) => {
+const HeroPart = ({ onIncidentAdded }) => {
   const [selectedType, setSelectedType] = useState(null);
   const [description, setDescription] = useState('');
   const [location, setLocation] = useState('');
@@ -125,7 +125,7 @@ const HeroReport = ({ onIncidentAdded }) => {
               className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-900"
             />
             {latitude && longitude && !location && (
-              <p className="text-xs text-blue-600 mt-2">📍 GPS coordinates saved: {latitude.toFixed(6)}, {longitude.toFixed(6)}</p>
+              <p className="text-xs text-blue-600 mt-2">GPS coordinates saved: {latitude.toFixed(6)}, {longitude.toFixed(6)}</p>
             )}
           </div>
 
@@ -192,4 +192,4 @@ const HeroReport = ({ onIncidentAdded }) => {
   );
 };
 
-export default HeroReport;
+export default HeroPart;

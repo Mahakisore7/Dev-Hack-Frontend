@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, X, User } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const Navbar = ({ onNavigate }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -49,6 +50,12 @@ const Navbar = ({ onNavigate }) => {
             >
               BLOGS
             </button>
+            <Link
+              to="/admin"
+              className="px-4 py-2 text-gray-900 font-medium hover:text-blue-600 transition-colors"
+            >
+              ADMIN
+            </Link>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gray-100 text-gray-700 border border-gray-200">
               <User size={16} />
               <span className="text-sm font-medium">{username}</span>
@@ -92,6 +99,13 @@ const Navbar = ({ onNavigate }) => {
           >
             BLOGS
           </button>
+          <Link
+            to="/admin"
+            className="w-full px-4 py-3 text-left text-gray-900 hover:bg-gray-100 transition-colors font-medium border-t border-gray-200 block"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            ADMIN
+          </Link>
           <button
             onClick={() => handleNavClick('logout')}
             className="w-full px-4 py-3 text-left text-red-600 hover:bg-red-50 transition-colors font-medium border-t border-gray-200"
