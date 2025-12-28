@@ -1,5 +1,6 @@
 import React from 'react';
-import { ThumbsUp, ThumbsDown, Flame, Stethoscope, Car, Shield, Clock, MapPin } from 'lucide-react';
+import { ThumbsUp, ThumbsDown, Flame, Stethoscope, Car, Shield, Clock, MapPin, AlertCircle } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { updateVote } from '../data/incidents.jsx';
 
 const iconMap = {
@@ -96,10 +97,25 @@ const Blogs = ({ incidents, onRefresh }) => {
   };
 
   const unverifiedIncidents = incidents.filter((incident) => incident.status === 'unverified');
+  const username = typeof window !== 'undefined' ? window.currentUsername || 'Citizen' : 'Citizen';
 
   return (
     <section id="blogs" className="min-h-screen py-16 px-4 bg-gray-100">
       <div className="max-w-6xl mx-auto">
+        {/* Welcome Section */}
+        <div className="mb-12">
+          <h1 className="text-5xl font-bold text-gray-900 mb-3">Welcome, {username}</h1>
+          <p className="text-xl text-gray-600 mb-6">Report incidents instantly. Help save lives in real time.</p>
+          <Link
+            to="/user/report"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-colors shadow-md hover:shadow-lg"
+          >
+            <AlertCircle size={20} />
+            Report an Incident
+          </Link>
+        </div>
+
+        {/* Community Reports Section */}
         <div className="text-center mb-10">
           <h2 className="text-4xl font-bold text-gray-900 mb-2">Community Reports</h2>
           <p className="text-gray-500">Recent incidents reported by the community</p>
