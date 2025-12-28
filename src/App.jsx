@@ -1,20 +1,18 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import UserPage from './pages/UserPage';
+import AdminPage from './pages/AdminPage';
+import Login from './pages/Login';
 
-import First from './pages/First.jsx';
-import User from './pages/User.jsx';
-import Admin from './pages/Admin.jsx';
-
-function App() {
-
-
+const App = () => {
   return (
     <Routes>
-      <Route path="/" element={<First />} />
-      <Route path="/user" element={<User />} />
-      <Route path="/admin" element={<Admin />} />
+      <Route path="/" element={<Login />} />
+      <Route path="/user" element={<UserPage />} />
+      <Route path="/admin" element={<AdminPage />} />
+      <Route path="*" element={<div>Route not found</div>} />
     </Routes>
   );
-}
+};
 
 export default App;
