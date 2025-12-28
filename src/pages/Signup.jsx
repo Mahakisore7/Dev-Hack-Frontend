@@ -14,7 +14,7 @@
 //   const handleSubmit = async (e) => {
 //     e.preventDefault();
 //     try {
-//       const res = await axios.post("http://localhost:5000/api/auth/signup", formData);
+//       const res = await axios.post("https://resq-jg07.onrender.com/api/auth/signup", formData);
 //       if (res.data.success) {
 //         alert("Account created! Please login.");
 //         navigate("/");
@@ -87,7 +87,7 @@ const Signup = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/signup", formData);
+      const res = await axios.post("https://resq-jg07.onrender.com/api/auth/signup", formData);
       if (res.data.success) {
         alert("Account created successfully!");
         navigate("/"); // Moves to login page

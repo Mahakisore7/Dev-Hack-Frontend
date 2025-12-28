@@ -16,7 +16,7 @@ const UserPage = () => {
       setLoading(true);
       const token = localStorage.getItem("token"); 
       
-      const res = await axios.get("http://localhost:5000/api/incidents", {
+      const res = await axios.get("https://resq-jg07.onrender.com/api/incidents", {
         headers: { token: token } 
       });
 

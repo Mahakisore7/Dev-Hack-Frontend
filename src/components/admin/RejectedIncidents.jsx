@@ -11,7 +11,7 @@
 //   const fetchIncidents = async () => {
 //     try {
 //       const token = localStorage.getItem("token");
-//       const res = await axios.get("http://localhost:5000/api/admin/feed?status=Rejected", {
+//       const res = await axios.get("https://resq-jg07.onrender.com/api/admin/feed?status=Rejected", {
 //         headers: { token: token }
 //       });
 //       setIncidents(res.data.data);
@@ -31,7 +31,7 @@
 //     try {
 //       const token = localStorage.getItem("token");
 //       await axios.put(
-//         `http://localhost:5000/api/admin/update-status/${id}`,
+//         `https://resq-jg07.onrender.com/api/admin/update-status/${id}`,
 //         { status: "Unverified" }, // Matches Backend Enum
 //         { headers: { token: token } }
 //       );
@@ -114,7 +114,7 @@ const RejectedIncidents = ({ onStatusChange }) => {
   const fetchIncidents = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:5000/api/admin/feed?status=Rejected", {
+      const res = await axios.get("https://resq-jg07.onrender.com/api/admin/feed?status=Rejected", {
         headers: { token: token }
       });
       // Backend now sends pre-calculated upvoteCount and downvoteCount
@@ -135,7 +135,7 @@ const RejectedIncidents = ({ onStatusChange }) => {
     try {
       const token = localStorage.getItem("token");
       await axios.put(
-        `http://localhost:5000/api/admin/update-status/${id}`,
+        `https://resq-jg07.onrender.com/api/admin/update-status/${id}`,
         { status: "Unverified" },
         { headers: { token: token } }
       );

@@ -11,7 +11,7 @@ const VerifiedIncidents = ({ onStatusChange }) => {
   const fetchIncidents = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:5000/api/admin/feed?status=Verified", {
+      const res = await axios.get("https://resq-jg07.onrender.com/api/admin/feed?status=Verified", {
         headers: { token: token }
       });
       setIncidents(res.data.data);
@@ -31,7 +31,7 @@ const VerifiedIncidents = ({ onStatusChange }) => {
     try {
       const token = localStorage.getItem("token");
       await axios.put(
-        `http://localhost:5000/api/admin/update-status/${id}`,
+        `https://resq-jg07.onrender.com/api/admin/update-status/${id}`,
         { status: 'Resolved' }, // Matches Backend Enum
         { headers: { token: token } }
       );  

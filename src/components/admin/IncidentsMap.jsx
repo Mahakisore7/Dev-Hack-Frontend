@@ -88,7 +88,7 @@
 // //     const fetchIncidents = async () => {
 // //         try {
 // //             const token = localStorage.getItem("token");
-// //             const res = await axios.get("http://localhost:5000/api/admin/feed?status=All", {
+// //             const res = await axios.get("https://resq-jg07.onrender.com/api/admin/feed?status=All", {
 // //                 headers: { token: token }
 // //             });
 // //             // Backend returns data in res.data.data
@@ -387,7 +387,7 @@
 //     const fetchIncidents = async () => {
 //       try {
 //         const token = localStorage.getItem("token");
-//         const res = await axios.get("http://localhost:5000/api/admin/feed?status=All", {
+//         const res = await axios.get("https://resq-jg07.onrender.com/api/admin/feed?status=All", {
 //           headers: { token: token }
 //         });
 //         setIncidents(res.data.data || []);
@@ -558,7 +558,7 @@ const IncidentsMap = () => {
       try {
         const token = localStorage.getItem("token");
         // Ensure status=All is passed to the API
-        const res = await axios.get("http://localhost:5000/api/admin/feed?status=All", {
+        const res = await axios.get("https://resq-jg07.onrender.com/api/admin/feed?status=All", {
           headers: { token: token }
         });
         setIncidents(res.data.data || []);

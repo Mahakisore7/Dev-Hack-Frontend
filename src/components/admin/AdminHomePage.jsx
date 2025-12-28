@@ -79,7 +79,7 @@ const AdminHomePage = ({ onTabChange, onMapFullscreen }) => {
         try {
             const token = localStorage.getItem("token");
             // Fetch "All" so we can calculate stats correctly
-            const res = await axios.get("http://localhost:5000/api/admin/feed?status=All", {
+            const res = await axios.get("https://resq-jg07.onrender.com/api/admin/feed?status=All", {
                 headers: { token: token }
             });
             setIncidents(res.data.data);

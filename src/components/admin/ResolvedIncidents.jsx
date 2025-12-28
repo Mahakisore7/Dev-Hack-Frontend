@@ -11,7 +11,7 @@
 //   const fetchIncidents = async () => {
 //     try {
 //       const token = localStorage.getItem("token");
-//       const res = await axios.get("http://localhost:5000/api/admin/feed?status=Resolved", {
+//       const res = await axios.get("https://resq-jg07.onrender.com/api/admin/feed?status=Resolved", {
 //         headers: { token: token }
 //       });
 //       setIncidents(res.data.data);
@@ -86,7 +86,7 @@ const ResolvedIncidents = ({ onStatusChange }) => {
   const fetchIncidents = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:5000/api/admin/feed?status=Resolved", {
+      const res = await axios.get("https://resq-jg07.onrender.com/api/admin/feed?status=Resolved", {
         headers: { token: token }
       });
       // The backend res.data.data already contains upvoteCount and downvoteCount

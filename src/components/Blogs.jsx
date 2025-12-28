@@ -95,7 +95,7 @@
 //       if (!token) return alert("Please login to verify incidents!");
 
 //       await axios.post(
-//         `http://localhost:5000/api/incidents/${id}/upvote`,
+//         `https://resq-jg07.onrender.com/api/incidents/${id}/upvote`,
 //         {}, 
 //         { headers: { token: token } }
 //       );
@@ -111,7 +111,7 @@
 //       if (!token) return alert("Please login to reject incidents!");
 
 //       await axios.post(
-//         `http://localhost:5000/api/incidents/${id}/downvote`,
+//         `https://resq-jg07.onrender.com/api/incidents/${id}/downvote`,
 //         {}, 
 //         { headers: { token: token } }
 //       );
@@ -275,7 +275,7 @@ const Blogs = ({ incidents = [], onRefresh }) => {
       if (!token) return alert("Please login to verify incidents!");
 
       await axios.post(
-        `http://localhost:5000/api/incidents/${id}/upvote`,
+        `https://resq-jg07.onrender.com/api/incidents/${id}/upvote`,
         {}, 
         { headers: { token: token } }
       );
@@ -293,7 +293,7 @@ const Blogs = ({ incidents = [], onRefresh }) => {
       if (!token) return alert("Please login to reject incidents!");
 
       await axios.post(
-        `http://localhost:5000/api/incidents/${id}/downvote`,
+        `https://resq-jg07.onrender.com/api/incidents/${id}/downvote`,
         {}, 
         { headers: { token: token } }
       );

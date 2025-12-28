@@ -99,7 +99,7 @@
 //     const fetchIncidents = async () => {
 //         try {
 //             const token = localStorage.getItem("token");
-//             const res = await axios.get("http://localhost:5000/api/admin/feed?status=All", {
+//             const res = await axios.get("https://resq-jg07.onrender.com/api/admin/feed?status=All", {
 //                 headers: { token: token }
 //             });
 //             setIncidents(res.data.data || []);
@@ -365,7 +365,7 @@ const MapFullscreen = ({ onClose, onTabChange }) => {
         try {
             const token = localStorage.getItem("token");
             // Ensure status=All is passed to get every record
-            const res = await axios.get("http://localhost:5000/api/admin/feed?status=All", {
+            const res = await axios.get("https://resq-jg07.onrender.com/api/admin/feed?status=All", {
                 headers: { token: token }
             });
             setIncidents(res.data.data || []);

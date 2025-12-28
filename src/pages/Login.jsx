@@ -14,7 +14,7 @@ const Login = () => {
     
     try {
       // 🟢 1. Call Backend
-      const res = await axios.post("http://localhost:5000/api/auth/login", formData);
+      const res = await axios.post("https://resq-jg07.onrender.com/api/auth/login", formData);
       
       if (res.data.success) {
         // 🟢 2. Save Token

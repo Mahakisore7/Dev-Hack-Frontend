@@ -112,7 +112,7 @@
 //     };
 
 //     try {
-//       const res = await fetch('http://localhost:5000/api/incidents', {
+//       const res = await fetch('https://resq-jg07.onrender.com/api/incidents', {
 //         method: 'POST',
 //         headers: { 
 //             'Content-Type': 'application/json',
@@ -374,7 +374,7 @@ const HeroPart = ({ onIncidentAdded }) => {
     };
 
     try {
-      const res = await fetch('http://localhost:5000/api/incidents', {
+      const res = await fetch('https://resq-jg07.onrender.com/api/incidents', {
         method: 'POST',
         headers: { 
             'Content-Type': 'application/json',

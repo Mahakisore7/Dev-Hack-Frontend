@@ -46,7 +46,7 @@ const IncidentCard = ({ incident, actions, onNotesUpdate }) => {
       
       // Call Backend API
       await axios.put(
-        `http://localhost:5000/api/admin/add-note/${incident._id}`, 
+        `https://resq-jg07.onrender.com/api/admin/add-note/${incident._id}`, 
         { adminNotes: newNote.trim() }, 
         { headers: { token: token } }
       );

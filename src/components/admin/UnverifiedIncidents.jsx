@@ -11,7 +11,7 @@
 //   const fetchIncidents = async () => {
 //     try {
 //       const token = localStorage.getItem("token");
-//       const res = await axios.get("http://localhost:5000/api/admin/feed?status=Unverified", {
+//       const res = await axios.get("https://resq-jg07.onrender.com/api/admin/feed?status=Unverified", {
 //         headers: { token: token }
 //       });
 //       setIncidents(res.data.data);
@@ -31,7 +31,7 @@
 //     try {
 //       const token = localStorage.getItem("token");
 //       await axios.put(
-//         `http://localhost:5000/api/admin/update-status/${id}`,
+//         `https://resq-jg07.onrender.com/api/admin/update-status/${id}`,
 //         { status: newStatus },
 //         { headers: { token: token } }
 //       );
@@ -125,7 +125,7 @@ const UnverifiedIncidents = ({ onStatusChange }) => {
     try {
       setLoading(true);
       const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:5000/api/admin/feed?status=Unverified", {
+      const res = await axios.get("https://resq-jg07.onrender.com/api/admin/feed?status=Unverified", {
         headers: { token: token }
       });
       
@@ -147,7 +147,7 @@ const UnverifiedIncidents = ({ onStatusChange }) => {
     try {
       const token = localStorage.getItem("token");
       await axios.put(
-        `http://localhost:5000/api/admin/update-status/${id}`,
+        `https://resq-jg07.onrender.com/api/admin/update-status/${id}`,
         { status: newStatus },
         { headers: { token: token } }
       );
