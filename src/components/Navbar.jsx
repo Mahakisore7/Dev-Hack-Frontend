@@ -35,7 +35,7 @@ const Navbar = ({ onNavigate }) => {
         window.localStorage.removeItem('username');
       }
     } catch {}
-    navigate('/user', { replace: true });
+    navigate('/', { replace: true });
     setIsMenuOpen(false);
   };
 
