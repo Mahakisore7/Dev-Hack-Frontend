@@ -74,7 +74,7 @@ const UserPage = () => {
   console.log('UserPage rendering'); // Debug log
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-900">
+    <div className="min-h-screen bg-[rgb(var(--color-bg-secondary))]">
       <Navbar onNavigate={handleNavigate} />
       <main className="pt-16">
         <Blogs incidents={incidents} onRefresh={refreshIncidents} />

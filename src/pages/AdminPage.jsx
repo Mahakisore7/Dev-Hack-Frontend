@@ -79,7 +79,7 @@ const AdminPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[rgb(var(--color-bg-secondary))]">
       <AdminNavbar activeTab={activeTab} onTabChange={handleTabChange} />
       <main className={activeTab === 'home' ? '' : ''}>
         {renderContent()}

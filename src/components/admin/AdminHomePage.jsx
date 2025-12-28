@@ -228,12 +228,12 @@ const AdminHomePage = ({ onTabChange, onMapFullscreen }) => {
   const mapCenter = adminLocation ? [adminLocation.lat, adminLocation.lng] : defaultCenter;
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-16">
+    <div className="min-h-screen bg-gradient-to-b from-[rgb(var(--color-bg-primary))] to-[rgb(var(--color-bg-secondary))] pt-16">
       <div className="max-w-7xl mx-auto p-6">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Admin Dashboard</h1>
-          <p className="text-gray-600">Manage incidents and monitor your area</p>
+        <div className="mb-8 bg-[rgb(var(--color-card-bg))] p-6 rounded-2xl shadow-lg border border-[rgb(var(--color-border))]">
+          <h1 className="text-4xl font-bold text-[rgb(var(--color-text-primary))] mb-2">Admin Dashboard</h1>
+          <p className="text-[rgb(var(--color-text-secondary))] text-lg">Manage incidents and monitor your area</p>
         </div>
 
         {/* Stats Overview */}
@@ -244,35 +244,39 @@ const AdminHomePage = ({ onTabChange, onMapFullscreen }) => {
               <button
                 key={card.id}
                 onClick={() => onTabChange(card.id)}
-                className={`${card.color} border-2 rounded-lg p-6 text-left transition-all hover:shadow-md group`}
+                className="bg-[rgb(var(--color-card-bg))] border-2 border-[rgb(var(--color-border))] rounded-2xl p-6 text-left transition-all hover:shadow-xl hover:scale-105 group"
               >
                 <div className="flex items-center justify-between mb-3">
-                  <Icon className={`w-8 h-8 ${card.iconColor}`} />
-                  <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-gray-600 transition-colors" />
+                  <div className={`p-3 rounded-xl ${card.id === 'unverified' ? 'bg-amber-100 dark:bg-amber-900/30' : card.id === 'verified' ? 'bg-green-100 dark:bg-green-900/30' : card.id === 'resolved' ? 'bg-blue-100 dark:bg-blue-900/30' : 'bg-red-100 dark:bg-red-900/30'}`}>
+                    <Icon className={`w-6 h-6 ${card.id === 'unverified' ? 'text-amber-600 dark:text-amber-400' : card.id === 'verified' ? 'text-green-600 dark:text-green-400' : card.id === 'resolved' ? 'text-blue-600 dark:text-blue-400' : 'text-red-600 dark:text-red-400'}`} />
+                  </div>
+                  <ChevronRight className="w-5 h-5 text-[rgb(var(--color-text-tertiary))] group-hover:text-[rgb(var(--color-text-secondary))] transition-colors" />
                 </div>
                 <div className="mb-2">
-                  <p className="text-2xl font-bold text-gray-900">{card.count}</p>
-                  <p className="font-medium text-gray-900">{card.label}</p>
+                  <p className="text-2xl font-bold text-[rgb(var(--color-text-primary))]">{card.count}</p>
+                  <p className="font-semibold text-[rgb(var(--color-text-primary))]">{card.label}</p>
                 </div>
-                <p className="text-sm text-gray-600">{card.description}</p>
+                <p className="text-sm text-[rgb(var(--color-text-secondary))]">{card.description}</p>
               </button>
             );
           })}
         </div>
 
         {/* Map Section */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-          <div className="p-4 border-b border-gray-200 flex items-center justify-between">
+        <div className="bg-[rgb(var(--color-card-bg))] rounded-2xl shadow-xl border border-[rgb(var(--color-border))] overflow-hidden">
+          <div className="p-4 border-b border-[rgb(var(--color-border))] flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <MapPin className="w-6 h-6 text-blue-600" />
+              <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-900/30">
+                <MapPin className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+              </div>
               <div>
-                <h2 className="text-xl font-bold text-gray-900">Incidents Overview</h2>
-                <p className="text-gray-600">Click map to view in fullscreen</p>
+                <h2 className="text-xl font-bold text-[rgb(var(--color-text-primary))]">Incidents Overview</h2>
+                <p className="text-[rgb(var(--color-text-secondary))]">Click map to view in fullscreen</p>
               </div>
             </div>
             <button
               onClick={onMapFullscreen}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800 transition-all hover:scale-105 shadow-md"
             >
               <Expand className="w-4 h-4" />
               <span>Fullscreen</span>
@@ -280,22 +284,22 @@ const AdminHomePage = ({ onTabChange, onMapFullscreen }) => {
           </div>
 
           {/* Legend */}
-          <div className="px-4 py-3 bg-gray-50 border-b border-gray-200">
-            <div className="flex items-center gap-6 text-sm">
+          <div className="px-4 py-3 bg-[rgb(var(--color-bg-secondary))] border-b border-[rgb(var(--color-border))]">
+            <div className="flex items-center gap-6 text-sm text-[rgb(var(--color-text-primary))]">
               <div className="flex items-center gap-2">
-                <div className="w-4 h-4 bg-amber-500 rounded-full border-2 border-white"></div>
+                <div className="w-4 h-4 bg-amber-500 rounded-full border-2 border-white shadow-sm"></div>
                 <span>Unverified ({incidentStats.unverified})</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-4 h-4 bg-red-500 rounded-full border-2 border-white"></div>
+                <div className="w-4 h-4 bg-red-500 rounded-full border-2 border-white shadow-sm"></div>
                 <span>Verified ({incidentStats.verified})</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
+                <div className="w-4 h-4 bg-green-500 rounded-full border-2 border-white shadow-sm"></div>
                 <span>Resolved ({incidentStats.resolved})</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-4 h-4 bg-blue-500 rounded-full border-2 border-white"></div>
+                <div className="w-4 h-4 bg-blue-500 rounded-full border-2 border-white shadow-sm"></div>
                 <span>Your Location</span>
               </div>
             </div>

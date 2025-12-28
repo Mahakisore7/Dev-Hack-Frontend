@@ -16,21 +16,21 @@ const RejectedIncidents = ({ onStatusChange }) => {
       label: 'Move to Unverified',
       icon: RotateCcw,
       onClick: handleMoveToUnverified,
-      className: 'bg-amber-500 hover:bg-amber-600 text-white',
+      className: 'bg-amber-600 hover:bg-amber-700 dark:bg-amber-700 dark:hover:bg-amber-800 text-white',
     },
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-20 pb-8 px-4">
+    <div className="min-h-screen bg-gradient-to-b from-[rgb(var(--color-bg-primary))] to-[rgb(var(--color-bg-secondary))] pt-20 pb-8 px-4">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="flex items-center gap-3 mb-6">
-          <div className="p-3 rounded-xl bg-red-100">
-            <XCircle size={28} className="text-red-600" />
+        <div className="flex items-center gap-4 mb-8 bg-[rgb(var(--color-card-bg))] p-6 rounded-2xl shadow-lg border border-[rgb(var(--color-border))]">
+          <div className="p-4 rounded-xl bg-red-100 dark:bg-red-900/30">
+            <XCircle size={32} className="text-red-600 dark:text-red-400" />
           </div>
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">Rejected Incidents</h2>
-            <p className="text-gray-500">Incidents that were rejected by admin</p>
+            <h2 className="text-3xl font-bold text-[rgb(var(--color-text-primary))]">Rejected Incidents</h2>
+            <p className="text-[rgb(var(--color-text-secondary))] mt-1">Incidents that were rejected by admin</p>
           </div>
         </div>
 
@@ -42,10 +42,10 @@ const RejectedIncidents = ({ onStatusChange }) => {
             ))}
           </div>
         ) : (
-          <div className="text-center py-16 bg-white rounded-2xl border border-gray-200">
-            <XCircle size={48} className="mx-auto text-gray-300 mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No Rejected Incidents</h3>
-            <p className="text-gray-500">No incidents have been rejected</p>
+          <div className="text-center py-20 bg-[rgb(var(--color-card-bg))] rounded-2xl border border-[rgb(var(--color-border))] shadow-lg">
+            <XCircle size={64} className="mx-auto text-[rgb(var(--color-text-tertiary))] mb-4" />
+            <h3 className="text-xl font-semibold text-[rgb(var(--color-text-primary))] mb-2">No Rejected Incidents</h3>
+            <p className="text-[rgb(var(--color-text-secondary))]">No incidents have been rejected</p>
           </div>
         )}
       </div>

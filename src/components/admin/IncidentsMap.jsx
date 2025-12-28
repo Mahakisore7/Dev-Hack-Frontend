@@ -173,30 +173,32 @@ const IncidentsMap = () => {
   const mapCenter = adminLocation ? [adminLocation.lat, adminLocation.lng] : defaultCenter;
 
   return (
-    <div className="h-screen bg-gray-50 pt-16">
+    <div className="h-screen bg-gradient-to-b from-[rgb(var(--color-bg-primary))] to-[rgb(var(--color-bg-secondary))] pt-16">
       <div className="h-full flex flex-col">
         {/* Header */}
-        <div className="bg-white shadow-sm border-b border-gray-200 p-4">
+        <div className="bg-[rgb(var(--color-card-bg))] shadow-lg border-b border-[rgb(var(--color-border))] p-4">
           <div className="max-w-7xl mx-auto">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <MapPin className="w-6 h-6 text-blue-600" />
+                <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-900/30">
+                  <MapPin className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                </div>
                 <div>
-                  <h1 className="text-2xl font-bold text-gray-900">Incidents Map</h1>
-                  <p className="text-gray-600">View all reported incidents on the map</p>
+                  <h1 className="text-2xl font-bold text-[rgb(var(--color-text-primary))]">Incidents Map</h1>
+                  <p className="text-[rgb(var(--color-text-secondary))]">View all reported incidents on the map</p>
                 </div>
               </div>
-              <div className="flex items-center gap-4 text-sm">
+              <div className="flex items-center gap-4 text-sm text-[rgb(var(--color-text-primary))]">
                 <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 bg-amber-500 rounded-full border-2 border-white"></div>
+                  <div className="w-4 h-4 bg-amber-500 rounded-full border-2 border-white shadow-sm"></div>
                   <span>Unverified</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 bg-red-500 rounded-full border-2 border-white"></div>
+                  <div className="w-4 h-4 bg-red-500 rounded-full border-2 border-white shadow-sm"></div>
                   <span>Verified</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
+                  <div className="w-4 h-4 bg-green-500 rounded-full border-2 border-white shadow-sm"></div>
                   <span>Resolved</span>
                 </div>
                 <div className="flex items-center gap-2">

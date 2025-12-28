@@ -16,21 +16,21 @@ const VerifiedIncidents = ({ onStatusChange }) => {
       label: 'Mark as Resolved',
       icon: Shield,
       onClick: handleResolve,
-      className: 'bg-blue-500 hover:bg-blue-600 text-white',
+      className: 'bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800 text-white',
     },
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-20 pb-8 px-4">
+    <div className="min-h-screen bg-gradient-to-b from-[rgb(var(--color-bg-primary))] to-[rgb(var(--color-bg-secondary))] pt-20 pb-8 px-4">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="flex items-center gap-3 mb-6">
-          <div className="p-3 rounded-xl bg-green-100">
-            <CheckCircle size={28} className="text-green-600" />
+        <div className="flex items-center gap-4 mb-8 bg-[rgb(var(--color-card-bg))] p-6 rounded-2xl shadow-lg border border-[rgb(var(--color-border))]">
+          <div className="p-4 rounded-xl bg-green-100 dark:bg-green-900/30">
+            <CheckCircle size={32} className="text-green-600 dark:text-green-400" />
           </div>
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">Verified Incidents</h2>
-            <p className="text-gray-500">Confirmed incidents awaiting resolution</p>
+            <h2 className="text-3xl font-bold text-[rgb(var(--color-text-primary))]">Verified Incidents</h2>
+            <p className="text-[rgb(var(--color-text-secondary))] mt-1">Confirmed incidents awaiting resolution</p>
           </div>
         </div>
 
@@ -42,10 +42,10 @@ const VerifiedIncidents = ({ onStatusChange }) => {
             ))}
           </div>
         ) : (
-          <div className="text-center py-16 bg-white rounded-2xl border border-gray-200">
-            <CheckCircle size={48} className="mx-auto text-gray-300 mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No Verified Incidents</h3>
-            <p className="text-gray-500">No incidents are currently verified</p>
+          <div className="text-center py-20 bg-[rgb(var(--color-card-bg))] rounded-2xl border border-[rgb(var(--color-border))] shadow-lg">
+            <CheckCircle size={64} className="mx-auto text-[rgb(var(--color-text-tertiary))] mb-4" />
+            <h3 className="text-xl font-semibold text-[rgb(var(--color-text-primary))] mb-2">No Verified Incidents</h3>
+            <p className="text-[rgb(var(--color-text-secondary))]">No incidents are currently verified</p>
           </div>
         )}
       </div>

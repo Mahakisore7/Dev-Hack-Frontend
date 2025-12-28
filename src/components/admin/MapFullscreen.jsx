@@ -234,15 +234,17 @@ const MapFullscreen = ({ onClose, onTabChange }) => {
   }, [onClose]);
 
   return (
-    <div className="fixed inset-0 z-50 bg-white">
+    <div className="fixed inset-0 z-50 bg-[rgb(var(--color-bg-primary))]">
       {/* Header */}
-      <div className="absolute top-0 left-0 right-0 z-10 bg-white/95 backdrop-blur-sm border-b border-gray-200 p-4">
+      <div className="absolute top-0 left-0 right-0 z-10 bg-[rgb(var(--color-card-bg))]/95 backdrop-blur-sm border-b border-[rgb(var(--color-border))] p-4 shadow-lg">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <MapPin className="w-6 h-6 text-blue-600" />
+            <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-900/30">
+              <MapPin className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+            </div>
             <div>
-              <h1 className="text-xl font-bold text-gray-900">Full Screen Map View</h1>
-              <p className="text-sm text-gray-600">All incidents in your area</p>
+              <h1 className="text-xl font-bold text-[rgb(var(--color-text-primary))]">Full Screen Map View</h1>
+              <p className="text-sm text-[rgb(var(--color-text-secondary))]">All incidents in your area</p>
             </div>
           </div>
           
@@ -258,7 +260,7 @@ const MapFullscreen = ({ onClose, onTabChange }) => {
                       onTabChange(item.id);
                       onClose();
                     }}
-                    className={`${item.color} text-white px-3 py-2 rounded-lg flex items-center gap-2 text-sm font-medium transition-colors`}
+                    className={`${item.id === 'unverified' ? 'bg-amber-600 hover:bg-amber-700 dark:bg-amber-700 dark:hover:bg-amber-800' : item.id === 'verified' ? 'bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800' : item.id === 'resolved' ? 'bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800' : 'bg-red-600 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-800'} text-white px-3 py-2 rounded-lg flex items-center gap-2 text-sm font-medium transition-all hover:scale-105 shadow-md`}
                   >
                     <Icon className="w-4 h-4" />
                     <span>{item.label}</span>
@@ -272,7 +274,7 @@ const MapFullscreen = ({ onClose, onTabChange }) => {
             
             <button
               onClick={onClose}
-              className="flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-[rgb(var(--color-bg-secondary))] text-[rgb(var(--color-text-primary))] rounded-lg hover:bg-[rgb(var(--color-border))] transition-all hover:scale-105 shadow-md"
             >
               <Minimize2 className="w-4 h-4" />
               <span className="hidden sm:inline">Exit Fullscreen</span>
@@ -280,7 +282,7 @@ const MapFullscreen = ({ onClose, onTabChange }) => {
             
             <button
               onClick={onClose}
-              className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+              className="p-2 text-[rgb(var(--color-text-secondary))] hover:text-[rgb(var(--color-text-primary))] hover:bg-[rgb(var(--color-bg-secondary))] rounded-lg transition-all"
             >
               <X className="w-5 h-5" />
             </button>
@@ -288,13 +290,13 @@ const MapFullscreen = ({ onClose, onTabChange }) => {
         </div>
 
         {/* Legend */}
-        <div className="flex items-center gap-6 text-sm mt-3 pt-3 border-t border-gray-200">
+        <div className="flex items-center gap-6 text-sm mt-3 pt-3 border-t border-[rgb(var(--color-border))] text-[rgb(var(--color-text-primary))]">
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-amber-500 rounded-full border-2 border-white"></div>
+            <div className="w-4 h-4 bg-amber-500 rounded-full border-2 border-white shadow-sm"></div>
             <span>Unverified ({incidentStats.unverified})</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-red-500 rounded-full border-2 border-white"></div>
+            <div className="w-4 h-4 bg-red-500 rounded-full border-2 border-white shadow-sm"></div>
             <span>Verified ({incidentStats.verified})</span>
           </div>
           <div className="flex items-center gap-2">

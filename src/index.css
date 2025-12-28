@@ -1,7 +1,61 @@
 @import "tailwindcss";
 
 @layer base {
+  :root {
+    /* Light theme colors */
+    --color-bg-primary: 255 255 255;
+    --color-bg-secondary: 249 250 251;
+    --color-bg-tertiary: 243 244 246;
+    --color-text-primary: 17 24 39;
+    --color-text-secondary: 75 85 99;
+    --color-text-tertiary: 156 163 175;
+    --color-border: 229 231 235;
+    --color-accent: 99 102 241;
+    --color-accent-hover: 79 70 229;
+    --color-card-bg: 255 255 255;
+    --color-input-bg: 255 255 255;
+    --color-shadow: 0 0 0;
+  }
+
+  .dark {
+    /* Dark theme colors */
+    --color-bg-primary: 17 24 39;
+    --color-bg-secondary: 31 41 55;
+    --color-bg-tertiary: 55 65 81;
+    --color-text-primary: 243 244 246;
+    --color-text-secondary: 209 213 219;
+    --color-text-tertiary: 156 163 175;
+    --color-border: 75 85 99;
+    --color-accent: 129 140 248;
+    --color-accent-hover: 99 102 241;
+    --color-card-bg: 31 41 55;
+    --color-input-bg: 55 65 81;
+    --color-shadow: 0 0 0;
+  }
+
+  * {
+    @apply transition-colors duration-200;
+  }
+
   body {
-    @apply bg-white text-gray-900;
+    @apply bg-[rgb(var(--color-bg-primary))] text-[rgb(var(--color-text-primary))];
+  }
+
+  /* Custom scrollbar styles */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-[rgb(var(--color-bg-secondary))];
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-[rgb(var(--color-text-tertiary))] rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-[rgb(var(--color-text-secondary))];
   }
 }

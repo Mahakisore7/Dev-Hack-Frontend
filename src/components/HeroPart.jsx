@@ -119,17 +119,17 @@ const handleSubmit = async (e) => {
 };
 
   return (
-    <section id="report" className="min-h-screen pt-20 pb-16 px-4 bg-gradient-to-b from-background to-muted/30">
+    <section id="report" className="min-h-screen pt-20 pb-16 px-4 bg-gradient-to-b from-[rgb(var(--color-bg-primary))] to-[rgb(var(--color-bg-secondary))]">
       <div className="max-w-2xl mx-auto">
         <div className="text-center mb-8">
-          <h2 className="text-4xl font-bold text-gray-900 mb-2">Report an Incident</h2>
-          <p className="text-muted-foreground">Help your community by reporting incidents in your area</p>
+          <h2 className="text-4xl font-bold text-[rgb(var(--color-text-primary))] mb-2">Report an Incident</h2>
+          <p className="text-[rgb(var(--color-text-secondary))]">Help your community by reporting incidents in your area</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="bg-card border border-border rounded-2xl p-6 shadow-lg">
+        <form onSubmit={handleSubmit} className="bg-[rgb(var(--color-card-bg))] border border-[rgb(var(--color-border))] rounded-2xl p-8 shadow-xl">
           {/* Incident Type Buttons */}
           <div className="mb-6">
-            <label className="block text-sm font-medium text-foreground mb-3">Select Incident Type *</label>
+            <label className="block text-sm font-medium text-[rgb(var(--color-text-primary))] mb-3">Select Incident Type *</label>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {incidentTypes.map(({ id, label, icon: Icon, color }) => (
                 <button
@@ -138,8 +138,8 @@ const handleSubmit = async (e) => {
                   onClick={() => setSelectedType(id)}
                   className={`flex flex-col items-center justify-center p-4 rounded-xl transition-all ${
                     selectedType === id
-                      ? `${color} text-white ring-2 ring-offset-2 ring-offset-background ring-primary`
-                      : 'bg-muted hover:bg-muted/80 text-foreground'
+                      ? `${color} text-white ring-2 ring-offset-2 ring-offset-[rgb(var(--color-bg-primary))] shadow-lg scale-105`
+                      : 'bg-[rgb(var(--color-bg-tertiary))] hover:bg-[rgb(var(--color-border))] text-[rgb(var(--color-text-primary))]'
                   }`}
                 >
                   <Icon size={24} className="mb-2" />
@@ -151,7 +151,7 @@ const handleSubmit = async (e) => {
 
           {/* Location */}
           <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-900 mb-2">Location </label>
+            <label className="block text-sm font-medium text-[rgb(var(--color-text-primary))] mb-2">Location </label>
             <div className="relative">
               <input
                 type="text"
@@ -159,35 +159,35 @@ const handleSubmit = async (e) => {
                 onChange={(e) => setLocation(e.target.value)}
                 placeholder="Enter the incident location"
                 disabled={loadingLocation}
-                className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-900 disabled:opacity-60"
+                className="w-full px-4 py-3 rounded-xl border border-[rgb(var(--color-border))] bg-[rgb(var(--color-input-bg))] text-[rgb(var(--color-text-primary))] placeholder:text-[rgb(var(--color-text-tertiary))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--color-accent))] disabled:opacity-60 transition-all"
               />
               {loadingLocation && (
-                <Loader size={18} className="absolute right-3 top-3 text-blue-600 animate-spin" />
+                <Loader size={18} className="absolute right-3 top-3 text-[rgb(var(--color-accent))] animate-spin" />
               )}
             </div>
             {latitude && longitude && location && (
-              <p className="text-xs text-green-600 mt-2">✓ Location auto-filled from GPS</p>
+              <p className="text-xs text-green-600 dark:text-green-400 mt-2">✓ Location auto-filled from GPS</p>
             )}
             {latitude && longitude && !location && (
-              <p className="text-xs text-blue-600 mt-2">GPS coordinates saved: {latitude.toFixed(6)}, {longitude.toFixed(6)}</p>
+              <p className="text-xs text-blue-600 dark:text-blue-400 mt-2">GPS coordinates saved: {latitude.toFixed(6)}, {longitude.toFixed(6)}</p>
             )}
           </div>
 
           {/* Description */}
           <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-900 mb-2">Description *</label>
+            <label className="block text-sm font-medium text-[rgb(var(--color-text-primary))] mb-2">Description *</label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Describe the incident in detail..."
               rows={4}
-              className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-900 resize-none"
+              className="w-full px-4 py-3 rounded-xl border border-[rgb(var(--color-border))] bg-[rgb(var(--color-input-bg))] text-[rgb(var(--color-text-primary))] placeholder:text-[rgb(var(--color-text-tertiary))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--color-accent))] resize-none transition-all"
             />
           </div>
 
           {/* Media Upload */}
           <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-900 mb-2">Add Media (Optional)</label>
+            <label className="block text-sm font-medium text-[rgb(var(--color-text-primary))] mb-2">Add Media (Optional)</label>
             <div className="relative">
               <input
                 type="file"
@@ -198,10 +198,10 @@ const handleSubmit = async (e) => {
               />
               <label
                 htmlFor="media-upload"
-                className="flex items-center justify-center gap-2 w-full py-4 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-gray-900 hover:bg-gray-100 transition-colors"
+                className="flex items-center justify-center gap-2 w-full py-4 border-2 border-dashed border-[rgb(var(--color-border))] rounded-xl cursor-pointer hover:border-[rgb(var(--color-accent))] hover:bg-[rgb(var(--color-bg-tertiary))] transition-all"
               >
-                <Upload size={20} className="text-muted-foreground" />
-                <span className="text-gray-500">
+                <Upload size={20} className="text-[rgb(var(--color-text-tertiary))]" />
+                <span className="text-[rgb(var(--color-text-secondary))]">
                   {media ? media.name : 'Click to upload image or video'}
                 </span>
               </label>
@@ -213,7 +213,7 @@ const handleSubmit = async (e) => {
                   <button
                     type="button"
                     onClick={handleClearMedia}
-                    className="absolute top-2 right-2 bg-red-600 hover:bg-red-700 text-white rounded-full p-2 transition-colors"
+                    className="absolute top-2 right-2 bg-red-600 hover:bg-red-700 text-white rounded-full p-2 transition-all shadow-lg hover:shadow-xl"
                   >
                     <X size={18} />
                   </button>
@@ -225,7 +225,7 @@ const handleSubmit = async (e) => {
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full flex items-center justify-center gap-2 py-4 bg-gray-900 text-white rounded-xl font-semibold hover:bg-gray-800 transition-colors"
+            className="w-full flex items-center justify-center gap-2 py-4 bg-[rgb(var(--color-accent))] text-white rounded-xl font-semibold hover:bg-[rgb(var(--color-accent-hover))] transition-all shadow-lg hover:shadow-xl"
           >
             <Send size={20} />
             Submit Report

@@ -21,27 +21,27 @@ const UnverifiedIncidents = ({ onStatusChange }) => {
       label: 'Verify',
       icon: CheckCircle,
       onClick: handleVerify,
-      className: 'bg-green-500 hover:bg-green-600 text-white',
+      className: 'bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 text-white',
     },
     {
       label: 'Reject',
       icon: XCircle,
       onClick: handleReject,
-      className: 'bg-red-500 hover:bg-red-600 text-white',
+      className: 'bg-red-600 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-800 text-white',
     },
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-20 pb-8 px-4">
+    <div className="min-h-screen bg-gradient-to-b from-[rgb(var(--color-bg-primary))] to-[rgb(var(--color-bg-secondary))] pt-20 pb-8 px-4">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="flex items-center gap-3 mb-6">
-          <div className="p-3 rounded-xl bg-amber-100">
-            <Clock size={28} className="text-amber-600" />
+        <div className="flex items-center gap-4 mb-8 bg-[rgb(var(--color-card-bg))] p-6 rounded-2xl shadow-lg border border-[rgb(var(--color-border))]">
+          <div className="p-4 rounded-xl bg-amber-100 dark:bg-amber-900/30">
+            <Clock size={32} className="text-amber-600 dark:text-amber-400" />
           </div>
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">Unverified Incidents</h2>
-            <p className="text-gray-500">Review and verify or reject pending incidents</p>
+            <h2 className="text-3xl font-bold text-[rgb(var(--color-text-primary))]">Unverified Incidents</h2>
+            <p className="text-[rgb(var(--color-text-secondary))] mt-1">Review and verify or reject pending incidents</p>
           </div>
         </div>
 
@@ -53,10 +53,10 @@ const UnverifiedIncidents = ({ onStatusChange }) => {
             ))}
           </div>
         ) : (
-          <div className="text-center py-16 bg-white rounded-2xl border border-gray-200">
-            <Clock size={48} className="mx-auto text-gray-300 mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No Unverified Incidents</h3>
-            <p className="text-gray-500">All incidents have been reviewed</p>
+          <div className="text-center py-20 bg-[rgb(var(--color-card-bg))] rounded-2xl border border-[rgb(var(--color-border))] shadow-lg">
+            <Clock size={64} className="mx-auto text-[rgb(var(--color-text-tertiary))] mb-4" />
+            <h3 className="text-xl font-semibold text-[rgb(var(--color-text-primary))] mb-2">No Unverified Incidents</h3>
+            <p className="text-[rgb(var(--color-text-secondary))]">All incidents have been reviewed</p>
           </div>
         )}
       </div>
