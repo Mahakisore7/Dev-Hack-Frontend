@@ -17,6 +17,10 @@ const UserPage = () => {
   }, []);
 
   const handleNavigate = (section) => {
+    // Section navigation is kept for blogs, but report now goes to dedicated route
+    if (section === 'report') {
+      return window.location.assign('/user/report');
+    }
     const el = document.getElementById(section);
     if (el) {
       el.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -30,7 +34,6 @@ const UserPage = () => {
       <Navbar onNavigate={handleNavigate} />
       <main className="pt-16">
         <Blogs incidents={incidents} onRefresh={refreshIncidents} />
-        <HeroPart onIncidentAdded={refreshIncidents} />
       </main>
       <Footer />
     </div>
