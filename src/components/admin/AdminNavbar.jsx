@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Menu, X, Shield, CheckCircle, XCircle, Clock, Home, LogOut, Map } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Menu, X, Shield, CheckCircle, XCircle, Clock, Home, LogOut } from 'lucide-react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 
 const navItems = [
-  { id: 'map', label: 'Map', icon: Map, color: 'text-blue-600' },
+  { id: 'home', label: 'Home', icon: Home, color: 'text-blue-600' },
   { id: 'unverified', label: 'Unverified', icon: Clock, color: 'text-amber-600' },
   { id: 'verified', label: 'Verified', icon: CheckCircle, color: 'text-green-600' },
   { id: 'resolved', label: 'Resolved', icon: Shield, color: 'text-blue-600' },
@@ -13,10 +13,36 @@ const navItems = [
 const AdminNavbar = ({ activeTab, onTabChange }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleNavClick = (tabId) => {
     onTabChange(tabId);
     setIsMenuOpen(false);
+  };
+
+  // Get current query parameters for display
+  const searchParams = new URLSearchParams(location.search);
+  const isMapFullscreen = searchParams.get('map') === 'fullscreen';
+  const currentIncident = searchParams.get('incident');
+  
+  // Generate breadcrumb for current location
+  const getBreadcrumb = () => {
+    const parts = [];
+    
+    if (activeTab !== 'home') {
+      const tabLabel = navItems.find(item => item.id === activeTab)?.label || activeTab;
+      parts.push(tabLabel);
+    }
+    
+    if (isMapFullscreen) {
+      parts.push('Map View');
+    }
+    
+    if (currentIncident) {
+      parts.push(`Incident #${currentIncident}`);
+    }
+    
+    return parts.length > 0 ? parts.join(' › ') : 'Dashboard';
   };
 
   const handleLogout = () => {
@@ -29,10 +55,15 @@ const AdminNavbar = ({ activeTab, onTabChange }) => {
     <nav className="fixed top-0 left-0 right-0 z-50 bg-slate-900 border-b border-slate-700">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          {/* Logo */}
+          {/* Logo and Breadcrumb */}
           <div className="flex-shrink-0 flex items-center gap-2">
             <Shield className="w-8 h-8 text-blue-500" />
-            <h1 className="text-xl font-bold text-white">Admin Panel</h1>
+            <div>
+              <h1 className="text-xl font-bold text-white">Admin Panel</h1>
+              {(activeTab !== 'home' || isMapFullscreen || currentIncident) && (
+                <p className="text-xs text-slate-300">{getBreadcrumb()}</p>
+              )}
+            </div>
           </div>
 
           {/* Desktop Navigation */}
