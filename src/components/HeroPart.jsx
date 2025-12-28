@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Flame, Stethoscope, Car, Shield, Upload, Send, X } from 'lucide-react';
+import { Flame, Stethoscope, Car, Shield, Upload, Send, X, Loader } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { addIncident } from '../data/incidents.jsx';
+import { getLocationName } from '../utils/locationiq.js';
 
 const incidentTypes = [
   { id: 'fire', label: 'Fire', icon: Flame, color: 'bg-orange-500 hover:bg-orange-600' },
@@ -10,6 +12,7 @@ const incidentTypes = [
 ];
 
 const HeroPart = ({ onIncidentAdded }) => {
+  const navigate = useNavigate();
   const [selectedType, setSelectedType] = useState(null);
   const [description, setDescription] = useState('');
   const [location, setLocation] = useState('');
@@ -17,6 +20,7 @@ const HeroPart = ({ onIncidentAdded }) => {
   const [longitude, setLongitude] = useState(null);
   const [media, setMedia] = useState(null);
   const [mediaPreview, setMediaPreview] = useState(null);
+  const [loadingLocation, setLoadingLocation] = useState(false);
 
   useEffect(() => {
     // Request GPS permission automatically when component loads
@@ -26,6 +30,9 @@ const HeroPart = ({ onIncidentAdded }) => {
           const { latitude: lat, longitude: lng } = position.coords;
           setLatitude(lat);
           setLongitude(lng);
+          
+          // Fetch location name from coordinates
+          fetchLocationName(lat, lng);
         },
         (error) => {
           console.log('Location access: ', error.message);
@@ -33,6 +40,15 @@ const HeroPart = ({ onIncidentAdded }) => {
       );
     }
   }, []);
+
+  const fetchLocationName = async (lat, lng) => {
+    setLoadingLocation(true);
+    const locationName = await getLocationName(lat, lng);
+    if (locationName) {
+      setLocation(locationName);
+    }
+    setLoadingLocation(false);
+  };
 
   const handleMediaChange = (e) => {
     const file = e.target.files[0];
@@ -53,35 +69,54 @@ const HeroPart = ({ onIncidentAdded }) => {
     setMediaPreview(null);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    
-    if (!selectedType ) {
-      alert('Please fill the Type');
-      return;
-    }
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    const finalLocation = location || (latitude && longitude ? `${latitude.toFixed(6)}, ${longitude.toFixed(6)}` : '');
+  if (!selectedType) {
+    alert('Please fill the Type');
+    return;
+  }
+  if (!description.trim()) {
+    alert('Please fill the Description');
+    return;
+  }
 
-    const newIncident = {
-      type: selectedType,
-      description,
-      location: finalLocation,
-      latitude,
-      longitude,
-      media: mediaPreview,
-      status: 'unverified'
-    };
+  const finalLocation =
+    location || (latitude && longitude ? `${latitude.toFixed(6)}, ${longitude.toFixed(6)}` : '');
 
-    addIncident(newIncident);
-    onIncidentAdded();
+  const newIncident = {
+    type: selectedType,
+    description: description.trim(),
+    location: finalLocation,
+    latitude,
+    longitude,
+    media: mediaPreview,     // base64 for now
+    upvotes: 0,
+    downvotes: 0,
+    status: 'unverified',
+  };
 
-    // Reset form
+  try {
+    const res = await fetch('http://localhost:5000/api/incidents', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newIncident),
+    });
+    if (!res.ok) throw new Error('Failed to submit incident');
+
+    // optional: const saved = await res.json();
+    // onIncidentAdded?.();
+
     setSelectedType(null);
     setDescription('');
     setLocation('');
     handleClearMedia();
-  };
+    navigate('/user', { replace: true });
+  } catch (err) {
+    console.error(err);
+    alert('Error submitting incident to server');
+  }
+};
 
   return (
     <section id="report" className="min-h-screen pt-20 pb-16 px-4 bg-gradient-to-b from-background to-muted/30">
@@ -116,14 +151,23 @@ const HeroPart = ({ onIncidentAdded }) => {
 
           {/* Location */}
           <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-900 mb-2">Location (Optional)</label>
-            <input
-              type="text"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              placeholder="Enter the incident location"
-              className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-900"
-            />
+            <label className="block text-sm font-medium text-gray-900 mb-2">Location </label>
+            <div className="relative">
+              <input
+                type="text"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                placeholder="Enter the incident location"
+                disabled={loadingLocation}
+                className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-900 disabled:opacity-60"
+              />
+              {loadingLocation && (
+                <Loader size={18} className="absolute right-3 top-3 text-blue-600 animate-spin" />
+              )}
+            </div>
+            {latitude && longitude && location && (
+              <p className="text-xs text-green-600 mt-2">✓ Location auto-filled from GPS</p>
+            )}
             {latitude && longitude && !location && (
               <p className="text-xs text-blue-600 mt-2">GPS coordinates saved: {latitude.toFixed(6)}, {longitude.toFixed(6)}</p>
             )}
@@ -131,7 +175,7 @@ const HeroPart = ({ onIncidentAdded }) => {
 
           {/* Description */}
           <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-900 mb-2">Description (Optional)</label>
+            <label className="block text-sm font-medium text-gray-900 mb-2">Description *</label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
