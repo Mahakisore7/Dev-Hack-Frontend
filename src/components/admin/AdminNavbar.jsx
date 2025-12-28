@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Menu, X, Shield, CheckCircle, XCircle, Clock, Home } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Menu, X, Shield, CheckCircle, XCircle, Clock, Home, LogOut } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
 
 const navItems = [
   { id: 'unverified', label: 'Unverified', icon: Clock, color: 'text-amber-600' },
@@ -11,9 +11,16 @@ const navItems = [
 
 const AdminNavbar = ({ activeTab, onTabChange }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
   const handleNavClick = (tabId) => {
     onTabChange(tabId);
+    setIsMenuOpen(false);
+  };
+
+  const handleLogout = () => {
+    // Add any logout logic here if needed
+    navigate('/');
     setIsMenuOpen(false);
   };
 
@@ -54,6 +61,14 @@ const AdminNavbar = ({ activeTab, onTabChange }) => {
               <Home size={18} />
               <span>User View</span>
             </Link>
+            {/* Logout Button */}
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-red-400 hover:bg-slate-800 hover:text-red-500 transition-all ml-2"
+            >
+              <LogOut size={18} />
+              <span>Logout</span>
+            </button>
           </div>
 
           {/* Mobile Menu Button */}
@@ -98,6 +113,14 @@ const AdminNavbar = ({ activeTab, onTabChange }) => {
               <Home size={20} />
               <span>User View</span>
             </Link>
+            {/* Logout Button for Mobile */}
+            <button
+              onClick={handleLogout}
+              className="w-full flex items-center gap-3 px-4 py-3 rounded-lg font-medium text-red-400 hover:bg-slate-700 hover:text-red-500 transition-all border-t border-slate-600 mt-2 pt-4"
+            >
+              <LogOut size={20} />
+              <span>Logout</span>
+            </button>
           </div>
         </div>
       )}
