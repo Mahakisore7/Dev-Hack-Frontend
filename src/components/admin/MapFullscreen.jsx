@@ -1,21 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
+import axios from 'axios'; // <--- 1. Import Axios
 import 'leaflet/dist/leaflet.css';
-import { getIncidents } from '../../data/incidents';
 import { 
-  AlertCircle, 
-  MapPin, 
-  Clock, 
-  User, 
-  X, 
-  Minimize2,
-  CheckCircle,
-  XCircle,
-  Shield
+  AlertCircle, MapPin, Clock, User, X, Minimize2,
+  CheckCircle, XCircle, Shield
 } from 'lucide-react';
 
-// Fix for default markers in React Leaflet
+// --- LEAFLET FIXES ---
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
@@ -23,56 +16,43 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
 });
 
-// Create custom red icon for incidents
+// --- CUSTOM ICONS ---
 const createIncidentIcon = (status) => {
   const colors = {
-    unverified: '#f59e0b', // amber
-    verified: '#ef4444',   // red
-    resolved: '#22c55e',   // green
-    rejected: '#64748b'    // gray
+    Unverified: '#f59e0b', // Matches Backend Case
+    Verified: '#ef4444',
+    Resolved: '#22c55e',
+    Rejected: '#64748b'
   };
 
   return L.divIcon({
     className: 'custom-marker',
     html: `<div style="
-      width: 20px;
-      height: 20px;
-      background-color: ${colors[status] || colors.verified};
-      border: 3px solid white;
-      border-radius: 50%;
+      width: 20px; height: 20px;
+      background-color: ${colors[status] || '#f59e0b'};
+      border: 3px solid white; border-radius: 50%;
       box-shadow: 0 2px 4px rgba(0,0,0,0.3);
     "></div>`,
-    iconSize: [20, 20],
-    iconAnchor: [10, 10],
+    iconSize: [20, 20], iconAnchor: [10, 10],
   });
 };
 
-// Create custom blue icon for admin location
 const createAdminIcon = () => {
   return L.divIcon({
     className: 'custom-marker',
     html: `<div style="
-      width: 24px;
-      height: 24px;
-      background-color: #3b82f6;
-      border: 3px solid white;
-      border-radius: 50%;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-weight: bold;
-      font-size: 14px;
+      width: 24px; height: 24px;
+      background-color: #3b82f6; border: 3px solid white; border-radius: 50%;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3); color: white;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: bold; font-size: 14px;
     ">A</div>`,
-    iconSize: [24, 24],
-    iconAnchor: [12, 12],
+    iconSize: [24, 24], iconAnchor: [12, 12],
   });
 };
 
 const LocationMarker = ({ adminLocation }) => {
   const map = useMap();
-
   useEffect(() => {
     if (adminLocation) {
       map.setView([adminLocation.lat, adminLocation.lng], map.getZoom());
@@ -81,34 +61,36 @@ const LocationMarker = ({ adminLocation }) => {
 
   return adminLocation ? (
     <Marker position={[adminLocation.lat, adminLocation.lng]} icon={createAdminIcon()}>
-      <Popup>
-        <div className="p-2">
-          <div className="flex items-center gap-2 mb-2">
-            <User className="w-4 h-4 text-blue-600" />
-            <span className="font-semibold text-blue-600">Your Location</span>
-          </div>
-          <div className="text-sm text-gray-600">
-            <div>Lat: {adminLocation.lat.toFixed(4)}</div>
-            <div>Lng: {adminLocation.lng.toFixed(4)}</div>
-          </div>
-        </div>
-      </Popup>
+      <Popup>Your Location</Popup>
     </Marker>
   ) : null;
 };
 
+// --- MAIN COMPONENT ---
 const MapFullscreen = ({ onClose, onTabChange }) => {
   const [incidents, setIncidents] = useState([]);
   const [adminLocation, setAdminLocation] = useState(null);
   const [locationError, setLocationError] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // 🟢 1. FETCH INCIDENTS FROM BACKEND
   useEffect(() => {
-    // Load incidents
-    const incidentData = getIncidents();
-    setIncidents(incidentData);
+    const fetchIncidents = async () => {
+        try {
+            const token = localStorage.getItem("token");
+            const res = await axios.get("http://localhost:5000/api/admin/feed?status=All", {
+                headers: { token: token }
+            });
+            setIncidents(res.data.data);
+        } catch (error) {
+            console.error("Error loading map data:", error);
+        }
+    };
+    fetchIncidents();
+  }, []);
 
-    // Get admin's current location
+  // 🟢 2. GET USER LOCATION
+  useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -119,34 +101,17 @@ const MapFullscreen = ({ onClose, onTabChange }) => {
           setLoading(false);
         },
         (error) => {
-          let errorMessage = 'Unable to get your location. ';
-          
-          switch(error.code) {
-            case error.PERMISSION_DENIED:
-              errorMessage += 'Location access was denied. Please allow location access and refresh the page.';
-              break;
-            case error.POSITION_UNAVAILABLE:
-              errorMessage += 'Location information is unavailable.';
-              break;
-            case error.TIMEOUT:
-              errorMessage += 'Location request timed out.';
-              break;
-            default:
-              errorMessage += 'An unknown error occurred.';
-              break;
-          }
+          console.error("Geolocation error:", error);
+          let errorMessage = 'Unable to get your location.';
+          if (error.code === error.PERMISSION_DENIED) errorMessage = 'Location access denied.';
           
           setLocationError(errorMessage);
+          setAdminLocation({ lat: 12.9716, lng: 77.5946 }); // Default Fallback
           setLoading(false);
         },
-        {
-          enableHighAccuracy: true,
-          timeout: 10000,
-          maximumAge: 300000
-        }
+        { enableHighAccuracy: true }
       );
     } else {
-      setLocationError('Geolocation is not supported by this browser');
       setLoading(false);
     }
   }, []);
@@ -157,80 +122,49 @@ const MapFullscreen = ({ onClose, onTabChange }) => {
 
   const getStatusColor = (status) => {
     const colors = {
-      unverified: 'text-amber-600',
-      verified: 'text-red-600',
-      resolved: 'text-green-600',
-      rejected: 'text-gray-600'
+      Unverified: 'text-amber-600',
+      Verified: 'text-red-600',
+      Resolved: 'text-green-600',
+      Rejected: 'text-gray-600'
     };
     return colors[status] || 'text-gray-600';
   };
 
   const getStatusBadgeColor = (status) => {
     const colors = {
-      unverified: 'bg-amber-100 text-amber-800',
-      verified: 'bg-red-100 text-red-800',
-      resolved: 'bg-green-100 text-green-800',
-      rejected: 'bg-gray-100 text-gray-800'
+      Unverified: 'bg-amber-100 text-amber-800',
+      Verified: 'bg-red-100 text-red-800',
+      Resolved: 'bg-green-100 text-green-800',
+      Rejected: 'bg-gray-100 text-gray-800'
     };
     return colors[status] || 'bg-gray-100 text-gray-800';
   };
 
-  // Count incidents by status
+  // 🟢 3. CALCULATE STATS (Matches Backend Statuses)
   const incidentStats = {
-    unverified: incidents.filter(i => i.status === 'unverified').length,
-    verified: incidents.filter(i => i.status === 'verified').length,
-    resolved: incidents.filter(i => i.status === 'resolved').length,
-    rejected: incidents.filter(i => i.status === 'rejected').length,
+    unverified: incidents.filter(i => i.status === 'Unverified').length,
+    verified: incidents.filter(i => ['Verified', 'Responding', 'On Scene'].includes(i.status)).length,
+    resolved: incidents.filter(i => i.status === 'Resolved').length,
+    rejected: incidents.filter(i => i.status === 'Rejected').length,
   };
 
-  // Navigation items for quick access in fullscreen
   const quickNavItems = [
-    { 
-      id: 'unverified', 
-      label: 'Unverified', 
-      icon: Clock, 
-      color: 'bg-amber-600 hover:bg-amber-700',
-      count: incidentStats.unverified
-    },
-    { 
-      id: 'verified', 
-      label: 'Verified', 
-      icon: CheckCircle, 
-      color: 'bg-green-600 hover:bg-green-700',
-      count: incidentStats.verified
-    },
-    { 
-      id: 'resolved', 
-      label: 'Resolved', 
-      icon: Shield, 
-      color: 'bg-blue-600 hover:bg-blue-700',
-      count: incidentStats.resolved
-    },
-    { 
-      id: 'rejected', 
-      label: 'Rejected', 
-      icon: XCircle, 
-      color: 'bg-gray-600 hover:bg-gray-700',
-      count: incidentStats.rejected
-    },
+    { id: 'Unverified', label: 'Unverified', icon: Clock, color: 'bg-amber-600 hover:bg-amber-700', count: incidentStats.unverified },
+    { id: 'Verified', label: 'Verified', icon: CheckCircle, color: 'bg-red-600 hover:bg-red-700', count: incidentStats.verified },
+    { id: 'Resolved', label: 'Resolved', icon: Shield, color: 'bg-blue-600 hover:bg-blue-700', count: incidentStats.resolved },
+    { id: 'Rejected', label: 'Rejected', icon: XCircle, color: 'bg-gray-600 hover:bg-gray-700', count: incidentStats.rejected },
   ];
 
-  // Default center (New York City)
   const defaultCenter = [40.7580, -73.9855];
   const mapCenter = adminLocation ? [adminLocation.lat, adminLocation.lng] : defaultCenter;
 
-  // Handle escape key to close fullscreen
+  // Handle escape key
   useEffect(() => {
     const handleEscape = (event) => {
-      if (event.key === 'Escape') {
-        onClose();
-      }
+      if (event.key === 'Escape') onClose();
     };
-
     document.addEventListener('keydown', handleEscape);
-    return () => {
-      document.removeEventListener('keydown', handleEscape);
-    };
+    return () => document.removeEventListener('keydown', handleEscape);
   }, [onClose]);
 
   return (
@@ -277,34 +211,14 @@ const MapFullscreen = ({ onClose, onTabChange }) => {
               <Minimize2 className="w-4 h-4" />
               <span className="hidden sm:inline">Exit Fullscreen</span>
             </button>
-            
-            <button
-              onClick={onClose}
-              className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-            >
-              <X className="w-5 h-5" />
-            </button>
           </div>
         </div>
 
         {/* Legend */}
         <div className="flex items-center gap-6 text-sm mt-3 pt-3 border-t border-gray-200">
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-amber-500 rounded-full border-2 border-white"></div>
-            <span>Unverified ({incidentStats.unverified})</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-red-500 rounded-full border-2 border-white"></div>
-            <span>Verified ({incidentStats.verified})</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
-            <span>Resolved ({incidentStats.resolved})</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-blue-500 rounded-full border-2 border-white"></div>
-            <span>Your Location</span>
-          </div>
+           <div className="flex items-center gap-2"><div className="w-3 h-3 bg-amber-500 rounded-full"></div> Unverified ({incidentStats.unverified})</div>
+           <div className="flex items-center gap-2"><div className="w-3 h-3 bg-red-500 rounded-full"></div> Verified ({incidentStats.verified})</div>
+           <div className="flex items-center gap-2"><div className="w-3 h-3 bg-green-500 rounded-full"></div> Resolved ({incidentStats.resolved})</div>
         </div>
 
         {locationError && (
@@ -321,10 +235,7 @@ const MapFullscreen = ({ onClose, onTabChange }) => {
       <div className="absolute inset-0 pt-32">
         {loading ? (
           <div className="absolute inset-0 flex items-center justify-center bg-gray-50">
-            <div className="text-center">
-              <div className="animate-spin w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full mx-auto mb-2"></div>
-              <p className="text-gray-600">Loading map...</p>
-            </div>
+             <div className="text-center">Loading Map Data...</div>
           </div>
         ) : (
           <MapContainer
@@ -335,18 +246,18 @@ const MapFullscreen = ({ onClose, onTabChange }) => {
           >
             <TileLayer
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              attribution='&copy; OpenStreetMap contributors'
             />
             
-            {/* Admin location marker */}
             <LocationMarker adminLocation={adminLocation} />
             
-            {/* Incident markers */}
+            {/* 🟢 RENDER MARKERS FROM DB */}
             {incidents.map((incident) => (
-              incident.coordinates && (
+              // Check backend location structure
+              incident.location && incident.location.lat && (
                 <Marker
-                  key={incident.id}
-                  position={[incident.coordinates.lat, incident.coordinates.lng]}
+                  key={incident._id} // Use _id
+                  position={[incident.location.lat, incident.location.lng]}
                   icon={createIncidentIcon(incident.status)}
                 >
                   <Popup maxWidth={300}>
@@ -354,9 +265,7 @@ const MapFullscreen = ({ onClose, onTabChange }) => {
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex items-center gap-2">
                           <AlertCircle className={`w-5 h-5 ${getStatusColor(incident.status)}`} />
-                          <h3 className="font-semibold text-gray-900 capitalize">
-                            {incident.type}
-                          </h3>
+                          <h3 className="font-semibold text-gray-900 capitalize">{incident.type}</h3>
                         </div>
                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusBadgeColor(incident.status)}`}>
                           {incident.status}
@@ -365,22 +274,19 @@ const MapFullscreen = ({ onClose, onTabChange }) => {
                       
                       <div className="space-y-2">
                         <p className="text-gray-700 text-sm">{incident.description}</p>
-                        
                         <div className="flex items-center gap-2 text-sm text-gray-600">
                           <MapPin className="w-4 h-4" />
-                          <span>{incident.location}</span>
+                          <span>{incident.location.address || "Unknown"}</span>
                         </div>
-                        
                         <div className="flex items-center gap-2 text-sm text-gray-600">
                           <Clock className="w-4 h-4" />
-                          <span>{formatTimestamp(incident.timestamp)}</span>
+                          <span>{formatTimestamp(incident.createdAt)}</span>
+                        </div>
+                        <div className="flex items-center gap-4 text-sm text-gray-600 pt-2 border-t">
+                          <span className="text-green-600">👍 {incident.voteCount}</span>
                         </div>
                         
-                        <div className="flex items-center gap-4 text-sm text-gray-600 pt-2 border-t">
-                          <span className="text-green-600">👍 {incident.upvotes}</span>
-                          <span className="text-red-600">👎 {incident.downvotes}</span>
-                        </div>
-
+                        {/* Quick Action Button */}
                         <div className="pt-2 border-t">
                           <button
                             onClick={() => {
@@ -389,7 +295,7 @@ const MapFullscreen = ({ onClose, onTabChange }) => {
                             }}
                             className="text-blue-600 hover:text-blue-800 text-sm font-medium"
                           >
-                            View in {incident.status} section →
+                            Manage in {incident.status} tab →
                           </button>
                         </div>
                       </div>
@@ -402,9 +308,9 @@ const MapFullscreen = ({ onClose, onTabChange }) => {
         )}
       </div>
 
-      {/* Mobile Quick Navigation */}
+      {/* Mobile Quick Nav */}
       <div className="md:hidden absolute bottom-6 left-6 right-6 z-10">
-        <div className="bg-white/95 backdrop-blur-sm rounded-lg border border-gray-200 p-4">
+        <div className="bg-white/95 backdrop-blur-sm rounded-lg border border-gray-200 p-4 shadow-lg">
           <div className="grid grid-cols-2 gap-2">
             {quickNavItems.map((item) => {
               const Icon = item.icon;

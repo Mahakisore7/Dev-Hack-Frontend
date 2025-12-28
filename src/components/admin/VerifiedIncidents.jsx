@@ -1,14 +1,50 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios'; // <--- 1. Import Axios
 import { CheckCircle, Shield } from 'lucide-react';
 import IncidentCard from './IncidentCard';
-import { getIncidentsByStatus, updateIncidentStatus } from '../../data/incidents';
 
 const VerifiedIncidents = ({ onStatusChange }) => {
-  const incidents = getIncidentsByStatus('verified');
+  const [incidents, setIncidents] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleResolve = (id) => {
-    updateIncidentStatus(id, 'resolved');
-    onStatusChange();
+  // 🟢 1. FETCH VERIFIED INCIDENTS
+  const fetchIncidents = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.get("http://localhost:5000/api/admin/feed?status=Verified", {
+        headers: { token: token }
+      });
+      setIncidents(res.data.data);
+    } catch (error) {
+      console.error("Error fetching verified incidents:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchIncidents();
+  }, []);
+
+  // 🟢 2. HANDLE RESOLVE (Mark as Resolved)
+  const handleResolve = async (id) => {
+    try {
+      const token = localStorage.getItem("token");
+      await axios.put(
+        `http://localhost:5000/api/admin/update-status/${id}`,
+        { status: 'Resolved' }, // Matches Backend Enum
+        { headers: { token: token } }
+      );
+      
+      // Refresh list (item will disappear)
+      fetchIncidents();
+      // Notify parent to update dashboard stats
+      if (onStatusChange) onStatusChange();
+
+    } catch (error) {
+      alert("Failed to resolve incident");
+      console.error(error);
+    }
   };
 
   const actions = [
@@ -34,19 +70,31 @@ const VerifiedIncidents = ({ onStatusChange }) => {
           </div>
         </div>
 
-        {/* Incidents Grid */}
-        {incidents.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-            {incidents.map((incident) => (
-              <IncidentCard key={incident.id} incident={incident} actions={actions} onNotesUpdate={onStatusChange} />
-            ))}
+        {/* Loading State */}
+        {loading ? (
+          <div className="text-center py-16">
+            <p className="text-gray-500">Loading active incidents...</p>
           </div>
         ) : (
-          <div className="text-center py-16 bg-white rounded-2xl border border-gray-200">
-            <CheckCircle size={48} className="mx-auto text-gray-300 mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No Verified Incidents</h3>
-            <p className="text-gray-500">No incidents are currently verified</p>
-          </div>
+          /* Incidents Grid */
+          incidents.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+              {incidents.map((incident) => (
+                <IncidentCard 
+                  key={incident._id} // Use MongoDB _id
+                  incident={incident} 
+                  actions={actions} 
+                  onNotesUpdate={fetchIncidents} 
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-16 bg-white rounded-2xl border border-gray-200">
+              <CheckCircle size={48} className="mx-auto text-gray-300 mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">No Verified Incidents</h3>
+              <p className="text-gray-500">Good news! No active emergencies at the moment.</p>
+            </div>
+          )
         )}
       </div>
     </div>

@@ -1,11 +1,16 @@
 // LocationIQ API utility
 const LOCATIONIQ_API_KEY = 'pk.ecdc1396e32b333a086b9bb4bd337144';
-const LOCATIONIQ_BASE_URL = 'https://us1.locationiq.com/v1/search';
+
+// 🟢 CHANGE: Switched to 'reverse' endpoint for coordinates -> address
+const LOCATIONIQ_REVERSE_URL = 'https://us1.locationiq.com/v1/reverse';
 
 export const getLocationName = async (latitude, longitude) => {
+  if (!latitude || !longitude) return null;
+
   try {
+    // 🟢 CHANGE: Updated parameters for reverse geocoding
     const response = await fetch(
-      `${LOCATIONIQ_BASE_URL}?key=${LOCATIONIQ_API_KEY}&q=${latitude}%2C%20${longitude}&format=json`
+      `${LOCATIONIQ_REVERSE_URL}?key=${LOCATIONIQ_API_KEY}&lat=${latitude}&lon=${longitude}&format=json`
     );
     
     if (!response.ok) {
@@ -14,8 +19,9 @@ export const getLocationName = async (latitude, longitude) => {
     
     const data = await response.json();
     
-    if (data && data.length > 0) {
-      return data[0].display_name;
+    // 🟢 LocationIQ returns an object with 'display_name' for reverse geocoding
+    if (data && data.display_name) {
+      return data.display_name;
     }
     
     return null;

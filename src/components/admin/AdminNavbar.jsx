@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { Menu, X, Shield, CheckCircle, XCircle, Clock, Home, LogOut } from 'lucide-react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 
+// 🟢 FIX 1: Capitalize IDs to match Backend Statuses exactly
+// (Except 'home' which is our internal Dashboard view)
 const navItems = [
   { id: 'home', label: 'Home', icon: Home, color: 'text-blue-600' },
-  { id: 'unverified', label: 'Unverified', icon: Clock, color: 'text-amber-600' },
-  { id: 'verified', label: 'Verified', icon: CheckCircle, color: 'text-green-600' },
-  { id: 'resolved', label: 'Resolved', icon: Shield, color: 'text-blue-600' },
-  { id: 'rejected', label: 'Rejected', icon: XCircle, color: 'text-red-600' },
+  { id: 'Unverified', label: 'Unverified', icon: Clock, color: 'text-amber-600' },
+  { id: 'Verified', label: 'Verified', icon: CheckCircle, color: 'text-green-600' },
+  { id: 'Resolved', label: 'Resolved', icon: Shield, color: 'text-blue-600' },
+  { id: 'Rejected', label: 'Rejected', icon: XCircle, color: 'text-red-600' },
 ];
 
 const AdminNavbar = ({ activeTab, onTabChange }) => {
@@ -46,8 +48,11 @@ const AdminNavbar = ({ activeTab, onTabChange }) => {
   };
 
   const handleLogout = () => {
-    // Add any logout logic here if needed
-    navigate('/');
+    // 🟢 FIX 2: Clear Token and User Data on Logout
+    localStorage.removeItem("token");
+    localStorage.removeItem("userData");
+    
+    navigate('/'); // Redirect to Landing Page/Login
     setIsMenuOpen(false);
   };
 
@@ -55,8 +60,9 @@ const AdminNavbar = ({ activeTab, onTabChange }) => {
     <nav className="fixed top-0 left-0 right-0 z-50 bg-slate-900 border-b border-slate-700">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
+          
           {/* Logo and Breadcrumb */}
-          <div className="flex-shrink-0 flex items-center gap-2">
+          <div className="flex-shrink-0 flex items-center gap-2 cursor-pointer" onClick={() => handleNavClick('home')}>
             <Shield className="w-8 h-8 text-blue-500" />
             <div>
               <h1 className="text-xl font-bold text-white">Admin Panel</h1>
@@ -86,13 +92,18 @@ const AdminNavbar = ({ activeTab, onTabChange }) => {
                 </button>
               );
             })}
+            
+            {/* Divider */}
+            <div className="h-6 w-px bg-slate-700 mx-2"></div>
+
             <Link
               to="/user"
-              className="flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-all ml-2"
+              className="flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-all"
             >
               <Home size={18} />
               <span>User View</span>
             </Link>
+            
             {/* Logout Button */}
             <button
               onClick={handleLogout}
@@ -137,6 +148,7 @@ const AdminNavbar = ({ activeTab, onTabChange }) => {
                 </button>
               );
             })}
+            
             <Link
               to="/user"
               className="w-full flex items-center gap-3 px-4 py-3 rounded-lg font-medium text-slate-300 hover:bg-slate-700 hover:text-white transition-all border-t border-slate-600 mt-2 pt-4"
@@ -145,6 +157,7 @@ const AdminNavbar = ({ activeTab, onTabChange }) => {
               <Home size={20} />
               <span>User View</span>
             </Link>
+            
             {/* Logout Button for Mobile */}
             <button
               onClick={handleLogout}

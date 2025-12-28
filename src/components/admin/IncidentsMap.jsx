@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
+import axios from 'axios'; // <--- 1. Import Axios
 import 'leaflet/dist/leaflet.css';
-import { getIncidents } from '../../data/incidents';
 import { AlertCircle, MapPin, Clock, User } from 'lucide-react';
 
-// Fix for default markers in React Leaflet
+// --- 1. LEAFLET ICON FIXES ---
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
@@ -13,56 +13,45 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
 });
 
-// Create custom red icon for incidents
+// --- 2. CUSTOM INCIDENT ICONS ---
 const createIncidentIcon = (status) => {
   const colors = {
-    unverified: '#f59e0b', // amber
-    verified: '#ef4444',   // red
-    resolved: '#22c55e',   // green
-    rejected: '#64748b'    // gray
+    Unverified: '#f59e0b', // Matches Backend Case
+    Verified: '#ef4444',
+    Resolved: '#22c55e',
+    Rejected: '#64748b'
   };
 
   return L.divIcon({
     className: 'custom-marker',
     html: `<div style="
-      width: 20px;
-      height: 20px;
-      background-color: ${colors[status] || colors.verified};
-      border: 3px solid white;
-      border-radius: 50%;
+      width: 20px; height: 20px;
+      background-color: ${colors[status] || '#f59e0b'};
+      border: 3px solid white; border-radius: 50%;
       box-shadow: 0 2px 4px rgba(0,0,0,0.3);
     "></div>`,
-    iconSize: [20, 20],
-    iconAnchor: [10, 10],
+    iconSize: [20, 20], iconAnchor: [10, 10],
   });
 };
 
-// Create custom blue icon for admin location
+// --- 3. CUSTOM ADMIN LOCATION ICON ---
 const createAdminIcon = () => {
   return L.divIcon({
     className: 'custom-marker',
     html: `<div style="
-      width: 24px;
-      height: 24px;
-      background-color: #3b82f6;
-      border: 3px solid white;
-      border-radius: 50%;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-weight: bold;
-      font-size: 14px;
+      width: 24px; height: 24px;
+      background-color: #3b82f6; border: 3px solid white; border-radius: 50%;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3); color: white;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: bold; font-size: 14px;
     ">A</div>`,
-    iconSize: [24, 24],
-    iconAnchor: [12, 12],
+    iconSize: [24, 24], iconAnchor: [12, 12],
   });
 };
 
+// --- 4. MAP RE-CENTERING COMPONENT ---
 const LocationMarker = ({ adminLocation }) => {
   const map = useMap();
-
   useEffect(() => {
     if (adminLocation) {
       map.setView([adminLocation.lat, adminLocation.lng], map.getZoom());
@@ -87,18 +76,32 @@ const LocationMarker = ({ adminLocation }) => {
   ) : null;
 };
 
+// --- 5. MAIN COMPONENT ---
 const IncidentsMap = () => {
   const [incidents, setIncidents] = useState([]);
   const [adminLocation, setAdminLocation] = useState(null);
   const [locationError, setLocationError] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // 🟢 FETCH INCIDENTS FROM BACKEND
   useEffect(() => {
-    // Load incidents
-    const incidentData = getIncidents();
-    setIncidents(incidentData);
+    const fetchIncidents = async () => {
+        try {
+            const token = localStorage.getItem("token");
+            const res = await axios.get("http://localhost:5000/api/admin/feed?status=All", {
+                headers: { token: token }
+            });
+            // Backend returns data in res.data.data
+            setIncidents(res.data.data);
+        } catch (error) {
+            console.error("Error loading map data:", error);
+        }
+    };
+    fetchIncidents();
+  }, []);
 
-    // Get admin's current location
+  // 🟢 GET USER LOCATION (Restored full error handling)
+  useEffect(() => {
     if (navigator.geolocation) {
       console.log('Requesting location access...');
       navigator.geolocation.getCurrentPosition(
@@ -116,7 +119,7 @@ const IncidentsMap = () => {
           
           switch(error.code) {
             case error.PERMISSION_DENIED:
-              errorMessage += 'Location access was denied. Please allow location access and refresh the page.';
+              errorMessage += 'Location access was denied. Please allow location access.';
               break;
             case error.POSITION_UNAVAILABLE:
               errorMessage += 'Location information is unavailable.';
@@ -130,6 +133,8 @@ const IncidentsMap = () => {
           }
           
           setLocationError(errorMessage);
+          // Fallback to default location so map doesn't crash
+          setAdminLocation({ lat: 12.9716, lng: 77.5946 }); 
           setLoading(false);
         },
         {
@@ -150,25 +155,24 @@ const IncidentsMap = () => {
 
   const getStatusColor = (status) => {
     const colors = {
-      unverified: 'text-amber-600',
-      verified: 'text-red-600',
-      resolved: 'text-green-600',
-      rejected: 'text-gray-600'
+      Unverified: 'text-amber-600',
+      Verified: 'text-red-600',
+      Resolved: 'text-green-600',
+      Rejected: 'text-gray-600'
     };
     return colors[status] || 'text-gray-600';
   };
 
   const getStatusBadgeColor = (status) => {
     const colors = {
-      unverified: 'bg-amber-100 text-amber-800',
-      verified: 'bg-red-100 text-red-800',
-      resolved: 'bg-green-100 text-green-800',
-      rejected: 'bg-gray-100 text-gray-800'
+      Unverified: 'bg-amber-100 text-amber-800',
+      Verified: 'bg-red-100 text-red-800',
+      Resolved: 'bg-green-100 text-green-800',
+      Rejected: 'bg-gray-100 text-gray-800'
     };
     return colors[status] || 'bg-gray-100 text-gray-800';
   };
 
-  // Default center (New York City)
   const defaultCenter = [40.7580, -73.9855];
   const mapCenter = adminLocation ? [adminLocation.lat, adminLocation.lng] : defaultCenter;
 
@@ -176,7 +180,7 @@ const IncidentsMap = () => {
     <div className="h-screen bg-gray-50 pt-16">
       <div className="h-full flex flex-col">
         {/* Header */}
-        <div className="bg-white shadow-sm border-b border-gray-200 p-4">
+        <div className="bg-white shadow-sm border-b border-gray-200 p-4 z-10">
           <div className="max-w-7xl mx-auto">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -186,7 +190,9 @@ const IncidentsMap = () => {
                   <p className="text-gray-600">View all reported incidents on the map</p>
                 </div>
               </div>
-              <div className="flex items-center gap-4 text-sm">
+              
+              {/* Legend */}
+              <div className="flex items-center gap-4 text-sm hidden sm:flex">
                 <div className="flex items-center gap-2">
                   <div className="w-4 h-4 bg-amber-500 rounded-full border-2 border-white"></div>
                   <span>Unverified</span>
@@ -205,6 +211,7 @@ const IncidentsMap = () => {
                 </div>
               </div>
             </div>
+
             {locationError && (
               <div className="mt-3 p-3 bg-amber-50 border border-amber-200 rounded-lg">
                 <div className="flex items-center gap-2">
@@ -234,18 +241,19 @@ const IncidentsMap = () => {
             >
               <TileLayer
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                attribution='&copy; OpenStreetMap contributors'
               />
               
               {/* Admin location marker */}
               <LocationMarker adminLocation={adminLocation} />
               
-              {/* Incident markers */}
+              {/* 🟢 RENDER INCIDENTS FROM DB */}
               {incidents.map((incident) => (
-                incident.coordinates && (
+                // Check 'location.lat' (Backend structure) instead of 'coordinates'
+                incident.location && incident.location.lat && (
                   <Marker
-                    key={incident.id}
-                    position={[incident.coordinates.lat, incident.coordinates.lng]}
+                    key={incident._id} // Use MongoDB _id
+                    position={[incident.location.lat, incident.location.lng]}
                     icon={createIncidentIcon(incident.status)}
                   >
                     <Popup maxWidth={300}>
@@ -267,17 +275,16 @@ const IncidentsMap = () => {
                           
                           <div className="flex items-center gap-2 text-sm text-gray-600">
                             <MapPin className="w-4 h-4" />
-                            <span>{incident.location}</span>
+                            <span>{incident.location.address || "Unknown Location"}</span>
                           </div>
                           
                           <div className="flex items-center gap-2 text-sm text-gray-600">
                             <Clock className="w-4 h-4" />
-                            <span>{formatTimestamp(incident.timestamp)}</span>
+                            <span>{formatTimestamp(incident.createdAt)}</span>
                           </div>
                           
                           <div className="flex items-center gap-4 text-sm text-gray-600 pt-2 border-t">
-                            <span className="text-green-600">👍 {incident.upvotes}</span>
-                            <span className="text-red-600">👎 {incident.downvotes}</span>
+                            <span className="text-green-600 font-bold">👍 {incident.voteCount || 0}</span>
                           </div>
                         </div>
                       </div>

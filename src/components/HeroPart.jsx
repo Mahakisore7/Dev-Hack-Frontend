@@ -1,53 +1,60 @@
 import React, { useState, useEffect } from 'react';
 import { Flame, Stethoscope, Car, Shield, Upload, Send, X, Loader } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { addIncident } from '../data/incidents.jsx';
 import { getLocationName } from '../utils/locationiq.js';
 
 const incidentTypes = [
-  { id: 'fire', label: 'Fire', icon: Flame, color: 'bg-orange-500 hover:bg-orange-600' },
-  { id: 'medical', label: 'Medical', icon: Stethoscope, color: 'bg-red-500 hover:bg-red-600' },
-  { id: 'road accident', label: 'Road Accident', icon: Car, color: 'bg-yellow-500 hover:bg-yellow-600' },
-  { id: 'public safety', label: 'Public Safety', icon: Shield, color: 'bg-blue-500 hover:bg-blue-600' }
+  { id: 'Fire', label: 'Fire', icon: Flame, color: 'bg-orange-500 hover:bg-orange-600' },
+  { id: 'Medical', label: 'Medical', icon: Stethoscope, color: 'bg-red-500 hover:bg-red-600' },
+  { id: 'Accident', label: 'Road Accident', icon: Car, color: 'bg-yellow-500 hover:bg-yellow-600' },
+  { id: 'Public Safety', label: 'Public Safety', icon: Shield, color: 'bg-blue-500 hover:bg-blue-600' }
 ];
 
 const HeroPart = ({ onIncidentAdded }) => {
   const navigate = useNavigate();
   const [selectedType, setSelectedType] = useState(null);
   const [description, setDescription] = useState('');
-  const [location, setLocation] = useState('');
+  const [addressText, setAddressText] = useState(''); // Renamed for clarity
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
   const [media, setMedia] = useState(null);
   const [mediaPreview, setMediaPreview] = useState(null);
   const [loadingLocation, setLoadingLocation] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false); // New Loading State
 
   useEffect(() => {
-    // Request GPS permission automatically when component loads
+    // Request GPS permission automatically
     if (navigator.geolocation) {
+      setLoadingLocation(true);
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude: lat, longitude: lng } = position.coords;
           setLatitude(lat);
           setLongitude(lng);
-          
-          // Fetch location name from coordinates
           fetchLocationName(lat, lng);
         },
         (error) => {
-          console.log('Location access: ', error.message);
+          console.log('Location access denied/error: ', error.message);
+          setLoadingLocation(false);
+          // Fallback default (optional)
+          setLatitude(12.9716); 
+          setLongitude(77.5946);
         }
       );
     }
   }, []);
 
   const fetchLocationName = async (lat, lng) => {
-    setLoadingLocation(true);
-    const locationName = await getLocationName(lat, lng);
-    if (locationName) {
-      setLocation(locationName);
+    try {
+      const locationName = await getLocationName(lat, lng);
+      if (locationName) {
+        setAddressText(locationName);
+      }
+    } catch (err) {
+      console.error("Error fetching location name");
+    } finally {
+      setLoadingLocation(false);
     }
-    setLoadingLocation(false);
   };
 
   const handleMediaChange = (e) => {
@@ -56,11 +63,10 @@ const HeroPart = ({ onIncidentAdded }) => {
       setMedia(file);
       const reader = new FileReader();
       reader.onloadend = () => {
-        setMediaPreview(reader.result);
+        setMediaPreview(reader.result); // This Base64 string goes to backend
       };
       reader.readAsDataURL(file);
     }
-    // Reset input value to allow selecting the same file again
     e.target.value = '';
   };
 
@@ -69,67 +75,88 @@ const HeroPart = ({ onIncidentAdded }) => {
     setMediaPreview(null);
   };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
+  // 🟢 MAIN SUBMIT FUNCTION
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  if (!selectedType) {
-    alert('Please fill the Type');
-    return;
-  }
-  if (!description.trim()) {
-    alert('Please fill the Description');
-    return;
-  }
+    if (!selectedType) {
+      alert('Please select an Incident Type');
+      return;
+    }
+    if (!description.trim()) {
+      alert('Please fill the Description');
+      return;
+    }
 
-  const finalLocation =
-    location || (latitude && longitude ? `${latitude.toFixed(6)}, ${longitude.toFixed(6)}` : '');
+    setIsSubmitting(true);
 
-  const newIncident = {
-    type: selectedType,
-    description: description.trim(),
-    location: finalLocation,
-    latitude,
-    longitude,
-    media: mediaPreview,     // base64 for now
-    upvotes: 0,
-    downvotes: 0,
-    status: 'unverified',
+    // 1. Get Token (CRITICAL FIX)
+    const token = localStorage.getItem("token");
+    if (!token) {
+        alert("You must be logged in to report!");
+        setIsSubmitting(false);
+        navigate('/login'); // Redirect to login if no token
+        return;
+    }
+
+    // 2. Prepare Data (Matching Backend Structure)
+    const newIncident = {
+      type: selectedType,
+      description: description.trim(),
+      location: {
+        lat: latitude || 0,
+        lng: longitude || 0,
+        address: addressText || "Unknown Location"
+      },
+      image: mediaPreview // Backend expects "image", not "media"
+    };
+
+    try {
+      const res = await fetch('http://localhost:5000/api/incidents', {
+        method: 'POST',
+        headers: { 
+            'Content-Type': 'application/json',
+            'token': token // <--- HEADERS FIX
+        },
+        body: JSON.stringify(newIncident),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || 'Failed to submit incident');
+      }
+
+      // Success!
+      alert("Incident Reported Successfully!");
+      setSelectedType(null);
+      setDescription('');
+      setAddressText('');
+      handleClearMedia();
+      
+      // Go back to feed
+      navigate('/user', { replace: true });
+
+    } catch (err) {
+      console.error(err);
+      alert(err.message);
+    } finally {
+        setIsSubmitting(false);
+    }
   };
-
-  try {
-    const res = await fetch('http://localhost:5000/api/incidents', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(newIncident),
-    });
-    if (!res.ok) throw new Error('Failed to submit incident');
-
-    // optional: const saved = await res.json();
-    // onIncidentAdded?.();
-
-    setSelectedType(null);
-    setDescription('');
-    setLocation('');
-    handleClearMedia();
-    navigate('/user', { replace: true });
-  } catch (err) {
-    console.error(err);
-    alert('Error submitting incident to server');
-  }
-};
 
   return (
     <section id="report" className="min-h-screen pt-20 pb-16 px-4 bg-gradient-to-b from-background to-muted/30">
       <div className="max-w-2xl mx-auto">
         <div className="text-center mb-8">
           <h2 className="text-4xl font-bold text-gray-900 mb-2">Report an Incident</h2>
-          <p className="text-muted-foreground">Help your community by reporting incidents in your area</p>
+          <p className="text-gray-500">Help your community by reporting incidents in your area</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="bg-card border border-border rounded-2xl p-6 shadow-lg">
+        <form onSubmit={handleSubmit} className="bg-white border border-gray-200 rounded-2xl p-6 shadow-lg">
           {/* Incident Type Buttons */}
           <div className="mb-6">
-            <label className="block text-sm font-medium text-foreground mb-3">Select Incident Type *</label>
+            <label className="block text-sm font-medium text-gray-900 mb-3">Select Incident Type *</label>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {incidentTypes.map(({ id, label, icon: Icon, color }) => (
                 <button
@@ -138,8 +165,8 @@ const handleSubmit = async (e) => {
                   onClick={() => setSelectedType(id)}
                   className={`flex flex-col items-center justify-center p-4 rounded-xl transition-all ${
                     selectedType === id
-                      ? `${color} text-white ring-2 ring-offset-2 ring-offset-background ring-primary`
-                      : 'bg-muted hover:bg-muted/80 text-foreground'
+                      ? `${color} text-white shadow-lg scale-105`
+                      : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
                   }`}
                 >
                   <Icon size={24} className="mb-2" />
@@ -155,21 +182,20 @@ const handleSubmit = async (e) => {
             <div className="relative">
               <input
                 type="text"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
+                value={addressText}
+                onChange={(e) => setAddressText(e.target.value)}
                 placeholder="Enter the incident location"
                 disabled={loadingLocation}
-                className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-900 disabled:opacity-60"
+                className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-black"
               />
               {loadingLocation && (
                 <Loader size={18} className="absolute right-3 top-3 text-blue-600 animate-spin" />
               )}
             </div>
-            {latitude && longitude && location && (
-              <p className="text-xs text-green-600 mt-2">✓ Location auto-filled from GPS</p>
-            )}
-            {latitude && longitude && !location && (
-              <p className="text-xs text-blue-600 mt-2">GPS coordinates saved: {latitude.toFixed(6)}, {longitude.toFixed(6)}</p>
+            {latitude && longitude && (
+              <p className="text-xs text-green-600 mt-2">
+                 ✓ GPS Active: {latitude.toFixed(4)}, {longitude.toFixed(4)}
+              </p>
             )}
           </div>
 
@@ -181,43 +207,41 @@ const handleSubmit = async (e) => {
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Describe the incident in detail..."
               rows={4}
-              className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-900 resize-none"
+              className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-black resize-none"
             />
           </div>
 
           {/* Media Upload */}
           <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-900 mb-2">Add Media (Optional)</label>
+            <label className="block text-sm font-medium text-gray-900 mb-2">Add Photo (Optional)</label>
             <div className="relative">
               <input
                 type="file"
-                accept="image/*,video/*"
+                accept="image/*"
                 onChange={handleMediaChange}
                 className="hidden"
                 id="media-upload"
               />
               <label
                 htmlFor="media-upload"
-                className="flex items-center justify-center gap-2 w-full py-4 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-gray-900 hover:bg-gray-100 transition-colors"
+                className="flex items-center justify-center gap-2 w-full py-4 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-black hover:bg-gray-50 transition-colors"
               >
-                <Upload size={20} className="text-muted-foreground" />
+                <Upload size={20} className="text-gray-400" />
                 <span className="text-gray-500">
-                  {media ? media.name : 'Click to upload image or video'}
+                  {media ? media.name : 'Click to upload image'}
                 </span>
               </label>
             </div>
             {mediaPreview && (
-              <div className="mt-3">
-                <div className="relative">
-                  <img src={mediaPreview} alt="Preview" className="w-full max-h-48 object-cover rounded-lg" />
-                  <button
-                    type="button"
-                    onClick={handleClearMedia}
-                    className="absolute top-2 right-2 bg-red-600 hover:bg-red-700 text-white rounded-full p-2 transition-colors"
-                  >
-                    <X size={18} />
-                  </button>
-                </div>
+              <div className="mt-3 relative">
+                <img src={mediaPreview} alt="Preview" className="w-full max-h-48 object-cover rounded-lg" />
+                <button
+                  type="button"
+                  onClick={handleClearMedia}
+                  className="absolute top-2 right-2 bg-red-600 text-white rounded-full p-1 shadow-md hover:bg-red-700"
+                >
+                  <X size={16} />
+                </button>
               </div>
             )}
           </div>
@@ -225,10 +249,13 @@ const handleSubmit = async (e) => {
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full flex items-center justify-center gap-2 py-4 bg-gray-900 text-white rounded-xl font-semibold hover:bg-gray-800 transition-colors"
+            disabled={isSubmitting}
+            className={`w-full flex items-center justify-center gap-2 py-4 rounded-xl font-semibold text-white transition-colors ${
+                isSubmitting ? 'bg-gray-500 cursor-not-allowed' : 'bg-black hover:bg-gray-800'
+            }`}
           >
-            <Send size={20} />
-            Submit Report
+            {isSubmitting ? <Loader className="animate-spin" /> : <Send size={20} />}
+            {isSubmitting ? 'Submitting...' : 'Submit Report'}
           </button>
         </form>
       </div>

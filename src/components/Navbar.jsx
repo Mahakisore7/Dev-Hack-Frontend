@@ -1,77 +1,79 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, X, User } from 'lucide-react';
-import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { Menu, X, User, Home, AlertTriangle, LogOut } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
 
-const Navbar = ({ onNavigate }) => {
+const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [username, setUsername] = useState('Citizen');
   const navigate = useNavigate();
 
   useEffect(() => {
-    try {
-      const stored = typeof window !== 'undefined' ? window.localStorage.getItem('username') : null;
-      if (stored && stored.trim().length > 0) {
-        setUsername(stored);
-      }
-      // Optional: react to changes from other tabs/windows
-      const handler = (e) => {
-        if (e.key === 'username') {
-          setUsername(e.newValue || 'Citizen');
+    // 🟢 FETCH USERNAME FROM LOCAL STORAGE
+    // Recall: In Login, we saved: localStorage.setItem("userData", JSON.stringify(user));
+    const userData = localStorage.getItem("userData");
+    if (userData) {
+      try {
+        const parsed = JSON.parse(userData);
+        if (parsed.username) {
+          setUsername(parsed.username);
         }
-      };
-      window.addEventListener('storage', handler);
-      return () => window.removeEventListener('storage', handler);
-    } catch {}
+      } catch (e) {
+        console.error("Error parsing user data");
+      }
+    }
   }, []);
 
-  const handleNavClick = (section) => {
-    onNavigate(section);
-    setIsMenuOpen(false);
-  };
-
   const handleLogout = () => {
-    try {
-      if (typeof window !== 'undefined') {
-        window.localStorage.removeItem('username');
-      }
-    } catch {}
-    navigate('/', { replace: true });
+    // 🔴 CLEAR EVERYTHING ON LOGOUT
+    localStorage.removeItem("token");
+    localStorage.removeItem("userData");
+    
+    navigate('/', { replace: true }); // Go back to Login
     setIsMenuOpen(false);
   };
-
-  // Export username via localStorage for other components
-  React.useEffect(() => {
-    if (typeof window !== 'undefined') {
-      window.currentUsername = username;
-    }
-  }, [username]);
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-200">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-200 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          <div className="flex-shrink-0">
-            <h1 className="text-2xl font-bold text-gray-900">IncidentHub</h1>
+          
+          {/* LOGO */}
+          <div className="flex-shrink-0 flex items-center gap-2 cursor-pointer" onClick={() => navigate('/user')}>
+            <AlertTriangle className="text-red-600 h-8 w-8" />
+            <h1 className="text-2xl font-bold text-gray-900 tracking-tight">IncidentHub</h1>
           </div>
           
-          {/* Desktop Navigation */}
+          {/* DESKTOP NAV */}
           <div className="hidden md:flex items-center gap-6">
+            <span className="text-gray-500 text-sm font-medium flex items-center gap-2">
+                <User size={16} /> Hello, {username}
+            </span>
+
+            <Link
+              to="/user"
+              className="px-4 py-2 text-gray-700 font-medium hover:text-blue-600 transition-colors flex items-center gap-2"
+            >
+              <Home size={18} /> HOME
+            </Link>
+
             <Link
               to="/user/report"
-              className="px-4 py-2 text-gray-900 font-medium hover:text-blue-600 transition-colors"
+              className="px-4 py-2 bg-gray-900 text-white font-medium hover:bg-gray-800 transition-colors rounded-lg flex items-center gap-2"
             >
-              REPORT
+              <AlertTriangle size={18} /> REPORT
             </Link>
+
             <button
               onClick={handleLogout}
-              className="px-4 py-2 text-white font-medium bg-red-600 hover:bg-red-700 transition-colors rounded-lg"
+              className="px-4 py-2 text-red-600 font-medium hover:bg-red-50 transition-colors rounded-lg flex items-center gap-2 border border-red-100"
             >
-              LOGOUT
+              <LogOut size={18} /> LOGOUT
             </button>
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* MOBILE MENU BUTTON */}
           <div className="md:hidden flex items-center gap-3">
+             <span className="text-sm font-semibold text-gray-700 mr-2">{username}</span>
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="p-2 rounded-md text-gray-900 hover:bg-gray-100 transition-colors"
@@ -82,21 +84,30 @@ const Navbar = ({ onNavigate }) => {
         </div>
       </div>
 
-      {/* Mobile Menu */}
+      {/* MOBILE MENU DROPDOWN */}
       {isMenuOpen && (
-        <div className="md:hidden absolute top-16 right-4 w-48 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden">
-          <Link
-            to="/user/report"
-            className="w-full px-4 py-3 block text-left text-gray-900 hover:bg-gray-100 transition-colors font-medium"
+        <div className="md:hidden absolute top-16 left-0 right-0 bg-white border-b border-gray-200 shadow-xl p-4 flex flex-col gap-2">
+           <Link
+            to="/user"
+            className="w-full px-4 py-3 flex items-center gap-3 text-gray-700 hover:bg-gray-100 rounded-lg font-medium"
             onClick={() => setIsMenuOpen(false)}
           >
-            REPORT
+            <Home size={20} /> HOME
           </Link>
+          
+          <Link
+            to="/user/report"
+            className="w-full px-4 py-3 flex items-center gap-3 bg-gray-900 text-white hover:bg-gray-800 rounded-lg font-medium"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            <AlertTriangle size={20} /> REPORT INCIDENT
+          </Link>
+
           <button
             onClick={handleLogout}
-            className="w-full px-4 py-3 text-left text-red-600 hover:bg-red-50 transition-colors font-medium border-t border-gray-200"
+            className="w-full px-4 py-3 flex items-center gap-3 text-red-600 hover:bg-red-50 rounded-lg font-medium"
           >
-            LOGOUT
+            <LogOut size={20} /> LOGOUT
           </button>
         </div>
       )}

@@ -24,8 +24,9 @@ const AdminPage = () => {
   
   // Validate tab and redirect if invalid
   useEffect(() => {
+    // Note: ensure isValidTab in your utils handles the Capitalized strings if you validate strictly
     if (!isValidTab(activeTab)) {
-      adminNav.toTab('home', { replace: true }); // Only use replace for error corrections
+      adminNav.toTab('home', { replace: true });
     }
   }, [activeTab]);
   
@@ -38,9 +39,8 @@ const AdminPage = () => {
     setRefreshKey(prev => prev + 1);
   };
 
-  // Update URL when tab changes - use push navigation for history
   const handleTabChange = (tabId) => {
-    adminNav.toTab(tabId); // Remove replace: true to allow back button
+    adminNav.toTab(tabId);
   };
 
   const handleMapFullscreen = () => {
@@ -51,6 +51,7 @@ const AdminPage = () => {
     adminNav.toggleMapFullscreen(false);
   };
 
+  // 🟢 CRITICAL FIX: Match the Capitalized IDs from AdminNavbar
   const renderContent = () => {
     switch (activeTab) {
       case 'home':
@@ -60,15 +61,16 @@ const AdminPage = () => {
             onMapFullscreen={handleMapFullscreen}
           />
         );
-      case 'unverified':
+      case 'Unverified': // <--- Capitalized to match Navbar & Backend
         return <UnverifiedIncidents key={refreshKey} onStatusChange={handleStatusChange} />;
-      case 'verified':
+      case 'Verified':   // <--- Capitalized
         return <VerifiedIncidents key={refreshKey} onStatusChange={handleStatusChange} />;
-      case 'resolved':
+      case 'Resolved':   // <--- Capitalized
         return <ResolvedIncidents key={refreshKey} onStatusChange={handleStatusChange} />;
-      case 'rejected':
+      case 'Rejected':   // <--- Capitalized
         return <RejectedIncidents key={refreshKey} onStatusChange={handleStatusChange} />;
       default:
+        // Fallback to home if no match found
         return (
           <AdminHomePage 
             onTabChange={handleTabChange} 
@@ -81,10 +83,10 @@ const AdminPage = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <AdminNavbar activeTab={activeTab} onTabChange={handleTabChange} />
-      <main className={activeTab === 'home' ? '' : ''}>
+      <main>
         {renderContent()}
       </main>
-      {activeTab !== 'home' && <Footer />}
+      {activeTab === 'home' && <Footer />} 
       
       {/* Fullscreen Map Modal */}
       {showFullscreenMap && (
