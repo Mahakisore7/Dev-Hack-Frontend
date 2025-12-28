@@ -1,18 +1,29 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { CheckCircle, XCircle, Clock } from 'lucide-react';
 import IncidentCard from './IncidentCard';
 import { getIncidentsByStatus, updateIncidentStatus } from '../../data/incidents';
 
 const UnverifiedIncidents = ({ onStatusChange }) => {
-  const incidents = getIncidentsByStatus('unverified');
+  const [incidents, setIncidents] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleVerify = (id) => {
-    updateIncidentStatus(id, 'verified');
+  useEffect(() => {
+    const fetchIncidents = async () => {
+      setLoading(true);
+      const data = await getIncidentsByStatus('unverified');
+      setIncidents(data);
+      setLoading(false);
+    };
+    fetchIncidents();
+  }, []);
+
+  const handleVerify = async (id) => {
+    await updateIncidentStatus(id, 'verified');
     onStatusChange();
   };
 
-  const handleReject = (id) => {
-    updateIncidentStatus(id, 'rejected');
+  const handleReject = async (id) => {
+    await updateIncidentStatus(id, 'rejected');
     onStatusChange();
   };
 

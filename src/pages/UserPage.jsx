@@ -7,9 +7,13 @@ import { getIncidents } from '../data/incidents';
 
 const UserPage = () => {
   const [incidents, setIncidents] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const refreshIncidents = () => {
-    setIncidents(getIncidents());
+  const refreshIncidents = async () => {
+    setLoading(true);
+    const data = await getIncidents();
+    setIncidents(data);
+    setLoading(false);
   };
 
   useEffect(() => {

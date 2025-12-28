@@ -1,13 +1,24 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { XCircle, RotateCcw } from 'lucide-react';
 import IncidentCard from './IncidentCard';
 import { getIncidentsByStatus, updateIncidentStatus } from '../../data/incidents';
 
 const RejectedIncidents = ({ onStatusChange }) => {
-  const incidents = getIncidentsByStatus('rejected');
+  const [incidents, setIncidents] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleMoveToUnverified = (id) => {
-    updateIncidentStatus(id, 'unverified');
+  useEffect(() => {
+    const fetchIncidents = async () => {
+      setLoading(true);
+      const data = await getIncidentsByStatus('rejected');
+      setIncidents(data);
+      setLoading(false);
+    };
+    fetchIncidents();
+  }, []);
+
+  const handleMoveToUnverified = async (id) => {
+    await updateIncidentStatus(id, 'unverified');
     onStatusChange();
   };
 

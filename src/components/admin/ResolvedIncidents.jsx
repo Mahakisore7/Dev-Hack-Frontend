@@ -1,10 +1,21 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Shield } from 'lucide-react';
 import IncidentCard from './IncidentCard';
 import { getIncidentsByStatus } from '../../data/incidents';
 
 const ResolvedIncidents = () => {
-  const incidents = getIncidentsByStatus('resolved');
+  const [incidents, setIncidents] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchIncidents = async () => {
+      setLoading(true);
+      const data = await getIncidentsByStatus('resolved');
+      setIncidents(data);
+      setLoading(false);
+    };
+    fetchIncidents();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50 pt-20 pb-8 px-4">
