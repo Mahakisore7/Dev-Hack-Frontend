@@ -92,19 +92,6 @@ const Navbar = ({ onNavigate }) => {
           >
             REPORT
           </Link>
-          {/* <button
-            onClick={() => handleNavClick('blogs')}
-            className="w-full px-4 py-3 text-left text-gray-900 hover:bg-gray-100 transition-colors font-medium border-t border-gray-200"
-          >
-            BLOGS
-          </button> */}
-          {/* <Link
-            to="/admin"
-            className="w-full px-4 py-3 text-left text-gray-900 hover:bg-gray-100 transition-colors font-medium border-t border-gray-200 block"
-            onClick={() => setIsMenuOpen(false)}
-          >
-            ADMIN
-          </Link> */}
           <button
             onClick={handleLogout}
             className="w-full px-4 py-3 text-left text-red-600 hover:bg-red-50 transition-colors font-medium border-t border-gray-200"
